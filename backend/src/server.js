@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const { checkDbConnection, createUsersTable, createQuizTables, insertSampleData, getDbTables } = require('./config/db');
+const path = require('path');
 
 // Ortam değişkenlerini yükle
 dotenv.config();
@@ -11,6 +12,11 @@ const app = express();
 // Middleware'ler
 app.use(cors()); // Farklı portlardan gelen isteklere izin ver
 app.use(express.json()); // Gelen JSON verilerini işle
+
+// --- ANGULAR UYGULAMASINI SUNMAK İÇİN EKLENEN KOD ---
+// Derlenmiş Angular dosyalarının bulunduğu 'public' klasörünü statik olarak sun.
+app.use(express.static(path.join(__dirname, '..', 'public')));
+// ----------------------------------------------------
 
 // Rotaları tanımla
 app.use('/api/auth', require('./routes/auth'));
@@ -30,6 +36,14 @@ app.get('/api/health', async (req, res) => {
         tables: tables
     });
 });
+
+// --- ANGULAR ROUTING İÇİN FALLBACK ---
+// API rotaları dışındaki tüm GET isteklerini Angular'ın index.html'ine yönlendir.
+// Bu, Angular'ın client-side routing'inin çalışmasını sağlar.
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+});
+// ------------------------------------
 
 const PORT = process.env.PORT || 3000;
 
