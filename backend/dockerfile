@@ -1,0 +1,32 @@
+# --- 1. AŞAMA: BUILDER ---
+# Bu aşama, bağımlılıkları yüklemek ve uygulama kaynak kodunu hazırlamak için kullanılır.
+FROM node:20-alpine AS builder
+
+# Backend için çalışma dizini oluştur
+WORKDIR /usr/src/app
+
+# Sadece bağımlılıklar değiştiğinde `npm install`'ı tekrar çalıştırmak için önce package.json dosyalarını kopyala
+COPY package*.json ./
+
+# Sadece production bağımlılıklarını yükle. Eğer build adımı için devDependencies gerekmiyorsa bu en verimli yoldur.
+RUN npm install --omit=dev
+
+# Geriye kalan tüm uygulama kodunu kopyala
+COPY . .
+
+# --- 2. AŞAMA: PRODUCTION ---
+# Son imaj için temiz ve küçük bir başlangıç yap.
+FROM node:20-alpine
+
+WORKDIR /usr/src/app
+
+# Builder aşamasından sadece gerekli dosyaları kopyala
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/package*.json ./
+COPY --from=builder /usr/src/app/src ./src
+
+# Güvenlik için root yerine node kullanıcısına geç
+USER node
+
+EXPOSE 3000
+CMD [ "node", "src/server.js" ]

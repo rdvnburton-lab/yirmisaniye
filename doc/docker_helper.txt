@@ -1,0 +1,49 @@
+Adım 1: İmajları Listeleme
+Öncelikle, projenizdeki mevcut Docker imajlarının isimlerini ve etiketlerini (tag) görmemiz gerekiyor. Projenizin ana dizininde bir terminal açın ve aşağıdaki komutu çalıştırın:
+
+bash
+docker-compose images
+Bu komut size şuna benzer bir çıktı verecektir:
+
+plaintext
+ Show full code block 
+           Container                      Repository                 Tag          ID        Size
+----------------------------------------------------------------------------------------------------
+yirmisaniye-backend-1         yirmisaniye_angular-backend        latest    a1b2c3d4e5f6   150MB
+yirmisaniye-db-1              mysql                              8.0       f6g7h8i9j0k1   550MB
+yirmisaniye-frontend-1        yirmisaniye_angular-frontend       latest    l2m3n4o5p6q7   25MB
+yirmisaniye-phpmyadmin-1      phpmyadmin/phpmyadmin              latest    r8s9t0u1v2w3   500MB
+Burada bizim için önemli olan Repository ve Tag sütunlarıdır.
+
+Adım 2: İmajları .tar Olarak Kaydetme
+Şimdi, docker save komutunu kullanarak her bir imajı ayrı bir .tar dosyasına kaydedelim. Yukarıdaki örnek çıktıya göre komutlar aşağıdaki gibi olacaktır. Kendi terminalinizdeki Repository ve Tag isimlerini kullanmayı unutmayın.
+
+bash
+ Show full code block 
+# Frontend imajını kaydet
+docker save -o yirmisaniye-frontend.tar yirmisaniye_angular-frontend:latest
+
+# Backend imajını kaydet
+docker save -o yirmisaniye-backend.tar yirmisaniye_angular-backend:latest
+
+# MySQL imajını kaydet
+docker save -o mysql-8.0.tar mysql:8.0
+
+# phpMyAdmin imajını kaydet
+docker save -o phpmyadmin.tar phpmyadmin/phpmyadmin:latest
+Bu komutlar çalıştıktan sonra, projenizin ana dizininde aşağıdaki .tar dosyaları oluşacaktır:
+
+yirmisaniye-frontend.tar
+yirmisaniye-backend.tar
+mysql-8.0.tar
+phpmyadmin.tar
+Adım 3: Kaydedilen İmajları Başka Bir Sistemde Yükleme (İsteğe Bağlı)
+Bu .tar dosyalarını başka bir sisteme kopyaladıktan sonra, docker load komutu ile bu imajları o sistemin Docker'ına yükleyebilirsiniz:
+
+bash
+docker load -i yirmisaniye-frontend.tar
+docker load -i yirmisaniye-backend.tar
+docker load -i mysql-8.0.tar
+docker load -i phpmyadmin.tar
+Bu imajları yükledikten sonra, projenizin docker-compose.yml dosyasını da o sisteme kopyalayıp docker-compose up -d komutunu çalıştırarak uygulamanızı internet bağlantısı olmadan ayağa kaldırabilirsiniz.
+

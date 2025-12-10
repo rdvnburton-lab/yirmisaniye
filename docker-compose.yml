@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # Backend Servisi (Node.js)
+  backend:
+    build: ./backend
+    container_name: yirmisaniye-backend
+    restart: unless-stopped
+    environment:
+      # Backend'inizin veritabanına bağlanmak için kullanacağı ortam değişkenleri
+      DB_HOST: db
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: yirmisaniye_db
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  # Frontend Servisi (Angular + Nginx)
+  frontend:
+    build: ./frontend
+    container_name: yirmisaniye-frontend
+    restart: unless-stopped
+    ports:
+      - "4000:80" # Host'taki 4200 portunu Nginx'in çalıştığı container'daki 80 portuna yönlendir
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  # Veritabanı Servisi (MySQL)
+  db:
+    image: mysql:8.0
+    container_name: yirmisaniye-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: yirmisaniye_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - app-network
+
+  # phpMyAdmin Servisi
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: yirmisaniye-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    ports:
+      - "8080:80" # phpMyAdmin'e http://localhost:8080 üzerinden erişim
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local
