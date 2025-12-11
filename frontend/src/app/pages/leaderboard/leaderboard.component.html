@@ -1,0 +1,36 @@
+<div class="card">
+    <p-card header="Liderlik Tablosu">
+        <ng-template pTemplate="subheader">
+
+        </ng-template>
+
+        <div *ngIf="loading" class="text-center">
+            <p-progressSpinner></p-progressSpinner>
+        </div>
+
+        <div *ngIf="!loading && leaderboard.length > 0">
+            <div class="leaderboard-list">
+                <div *ngFor="let user of leaderboard; let i = index"
+                    class="leaderboard-item flex align-items-center p-3 mb-3 border-round-lg"
+                    [ngClass]="getRankIconClass(i)">
+                    <!-- Sıralama Numarası -->
+                    <div class="rank-number text-2xl font-bold mr-4">{{ i + 1 }}</div>
+
+                    <!-- Kullanıcı Bilgisi -->
+                    <p-avatar [image]="user.profile_picture || 'assets/images/avatars/avatar-placeholder.png'"
+                        shape="circle" size="xlarge" class="mr-3"></p-avatar>
+                    <div class="flex-1">
+                        <div class="font-bold text-lg">{{ user.username }}</div>
+                        <div class="text-sm text-color-secondary">{{ user.quizzes_completed }} quiz tamamladı</div>
+                    </div>
+
+                    <!-- Puan ve İkon -->
+                    <div class="flex flex-column align-items-end">
+                        <div class="score font-bold text-xl">{{ user.total_score }} Puan</div>
+                        <i [ngClass]="getRankIcon(i)" class="mt-1" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </p-card>
+</div>

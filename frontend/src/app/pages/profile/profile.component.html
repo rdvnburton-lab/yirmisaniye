@@ -1,0 +1,146 @@
+<div class="profile-page p-fluid">
+    <p-progressSpinner *ngIf="loading"></p-progressSpinner>
+
+    <div *ngIf="!loading" class="grid">
+        <!-- Left Column: Profile Info -->
+        <div class="col-12">
+            <div class="card">
+                <div class="flex flex-col items-center md:flex-row md:items-start gap-4">
+                    <p-avatar [image]="profileImage" styleClass="w-9rem h-9rem" shape="circle"></p-avatar>
+                    <div class="flex-1 text-center md:text-left mt-4 md:mt-0">
+                        <div class="text-2xl font-bold mb-1">{{ username }}</div>
+                        <div class="text-color-secondary mb-4">{{ email }}</div>
+                        <p-button label="Profili Düzenle" icon="pi pi-pencil" (click)="showEditDialog()"
+                            styleClass="p-button-outlined p-button-sm"></p-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cüzdan Kartı -->
+        <div class="col-12">
+            <div class="card wallet-card">
+                <h5 class="mb-4">Cüzdanım</h5>
+                <div class="grid text-center">
+                    <div class="col-12 md:col-4">
+                        <div class="wallet-stat">
+                            <i class="pi pi-trophy text-yellow-500"></i>
+                            <span class="wallet-value">{{ userTotalScore }}</span>
+                            <span class="wallet-label">Toplam Başarı Puanı</span>
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-4">
+                        <div class="wallet-stat">
+                            <i class="pi pi-shopping-cart text-red-500"></i>
+                            <span class="wallet-value">{{ spentPoints }}</span>
+                            <span class="wallet-label">Harcanan Puan</span>
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-4">
+                        <div class="wallet-stat">
+                            <i class="pi pi-wallet text-green-500"></i>
+                            <span class="wallet-value">{{ userPoints }}</span>
+                            <span class="wallet-label">Harcanabilir Puan</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Password Change -->
+        <div class="col-12 lg:col-6">
+            <div class="card">
+                <h5>Şifre Değiştir</h5>
+                <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+                    <div class="flex flex-col gap-6">
+                        <p-password id="currentPassword" placeholder="Mevcut Şifre" [toggleMask]="true"
+                            styleClass="w-full" inputStyleClass="p-inputtext-lg" [fluid]="true" [feedback]="false"
+                            formControlName="currentPassword"></p-password>
+
+                        <p-password id="newPassword" placeholder="Yeni Şifre" [toggleMask]="true" styleClass="w-full"
+                            inputStyleClass="p-inputtext-lg" [fluid]="true" [feedback]="true"
+                            promptLabel="Lütfen bir şifre girin" weakLabel="Zayıf" mediumLabel="Orta"
+                            strongLabel="Güçlü" formControlName="newPassword"></p-password>
+
+                        <p-password id="confirmNewPassword" placeholder="Yeni Şifre Tekrar" [toggleMask]="true"
+                            styleClass="w-full" inputStyleClass="p-inputtext-lg" [fluid]="true" [feedback]="false"
+                            formControlName="confirmNewPassword"></p-password>
+
+                        <div class="text-center"
+                            *ngIf="passwordForm.get('confirmNewPassword')?.touched && passwordForm.hasError('passwordMismatch')">
+                            <small class="p-error">Yeni şifreler eşleşmiyor!</small>
+                        </div>
+
+                        <p-button label="Şifreyi Güncelle" icon="pi pi-save" type="submit"
+                            [disabled]="passwordForm.invalid"></p-button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Preferences (Full Width) -->
+        <div class="col-12 lg:col-6">
+            <div class="card">
+                <h5>Tercihler</h5>
+                <div class="flex flex-col gap-4">
+                    <div>
+                        <span class="text-sm text-muted-color font-semibold">Primary</span>
+                        <div class="pt-2 flex gap-2 flex-wrap justify-start">
+                            @for (primaryColor of primaryColors(); track primaryColor.name) {
+                            <button type="button" [title]="primaryColor.name"
+                                (click)="updateColors($event, 'primary', primaryColor)"
+                                [ngClass]="{ 'outline outline-primary': primaryColor.name === selectedPrimaryColor() }"
+                                class="cursor-pointer w-5 h-5 rounded-full flex shrink-0 items-center justify-center outline-offset-1 shadow"
+                                [style]="{ 'background-color': primaryColor?.name === 'noir' ? 'var(--text-color)' : primaryColor?.palette?.['500'] }">
+                            </button>
+                            }
+                        </div>
+                    </div>
+                    <div>
+                        <span class="text-sm text-muted-color font-semibold">Surface</span>
+                        <div class="pt-2 flex gap-2 flex-wrap justify-start">
+                            @for (surface of surfaces; track surface.name) {
+                            <button type="button" [title]="surface.name"
+                                (click)="updateColors($event, 'surface', surface)"
+                                class="cursor-pointer w-5 h-5 rounded-full flex shrink-0 items-center justify-center p-0 outline-offset-1"
+                                [ngClass]="{ 'outline outline-primary': selectedSurfaceColor() ? selectedSurfaceColor() === surface.name : layoutService.layoutConfig().darkTheme ? surface.name === 'zinc' : surface.name === 'slate' }"
+                                [style]="{ 'background-color': surface?.palette?.['500'] }">
+                            </button>
+                            }
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <span class="text-sm text-muted-color font-semibold">Presets</span>
+                        <p-selectbutton [options]="presets" [ngModel]="selectedPreset()"
+                            (ngModelChange)="onPresetChange($event)" [allowEmpty]="false" size="small" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p-dialog header="Profili Düzenle" [(visible)]="displayEditDialog" [modal]="true" [style]="{width: '50vw'}"
+    [draggable]="false" [resizable]="false">
+    <form [formGroup]="editProfileForm" (ngSubmit)="updateProfile()">
+        <div class="flex flex-col gap-6 p-4">
+            <p-iconField iconPosition="left">
+                <p-inputIcon class="pi pi-user"></p-inputIcon>
+                <input pInputText id="edit_username" type="text" placeholder="Kullanıcı Adı"
+                    class="w-full p-inputtext-lg" formControlName="username" />
+            </p-iconField>
+
+            <p-iconField iconPosition="left">
+                <p-inputIcon class="pi pi-envelope"></p-inputIcon>
+                <input pInputText id="edit_email" type="text" placeholder="Email" class="w-full p-inputtext-lg"
+                    formControlName="email" />
+            </p-iconField>
+        </div>
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button label="İptal" icon="pi pi-times" (click)="displayEditDialog=false"
+            styleClass="p-button-text"></p-button>
+        <p-button label="Kaydet" icon="pi pi-check" (click)="updateProfile()"
+            [disabled]="editProfileForm.invalid"></p-button>
+    </ng-template>
+</p-dialog>

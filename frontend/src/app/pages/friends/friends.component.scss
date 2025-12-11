@@ -1,0 +1,11 @@
+:host ::ng-deep {
+    .p-badge.p-badge-danger {
+        animation: pulse 1.5s infinite;
+    }
+}
+
+.friend-card a:hover {
+    text-decoration: none;
+    background-color: var(--surface-200); /* Hafif bir hover efekti */
+    border-radius: var(--border-radius);
+}

@@ -1,0 +1,14 @@
+.layout-topbar-logo {
+    img {
+        height: auto !important; // Temanın stilini ezmek için !important ekliyoruz.
+    }
+}
+
+.layout-topbar-actions {
+    display: flex;
+    align-items: center; // Öğeleri dikeyde hizala
+    gap: 0.5rem;
+    img {
+        object-fit: cover; // Resmin en-boy oranını koruyarak alanı doldurmasını sağlar
+    }
+}

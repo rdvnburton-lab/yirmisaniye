@@ -1,0 +1,47 @@
+<p-toast></p-toast>
+<div class="collections-page">
+    <p-progressSpinner *ngIf="loading"></p-progressSpinner>
+
+    <p-card *ngIf="error" header="Hata">
+        <p>{{ error }}</p>
+    </p-card>
+
+    <div *ngIf="!loading && !error">
+        <!-- Avatarlar Bölümü -->
+        <p-card styleClass="mb-4">
+            <ng-template pTemplate="title">
+                <i class="pi pi-user-edit mr-2"></i> Avatarlarım
+            </ng-template>
+            <div class="grid">
+                <div *ngFor="let avatar of avatars" class="col-6 md:col-3 lg:col-2">
+                    <div class="collection-item avatar-item p-ripple" (click)="selectAvatar(avatar)"
+                        [ngClass]="{'selected': isAvatarSelected(avatar)}">
+                        <img [src]="avatar.image_path" [alt]="avatar.name" class="avatar-image">
+                        <span class="item-name">{{ avatar.name }}</span>
+                        <div *ngIf="isAvatarSelected(avatar)" class="selected-overlay">
+                            <i class="pi pi-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </p-card>
+
+        <!-- Rozetler Bölümü -->
+        <p-card>
+            <ng-template pTemplate="title">
+                <i class="pi pi-shield mr-2"></i> Kazandığım Rozetler
+            </ng-template>
+            <div class="grid">
+                <div *ngFor="let badge of badges" class="col-6 md:col-4 lg:col-3">
+                    <div class="collection-item badge-item" [pTooltip]="badge.description" tooltipPosition="top">
+                        <i class="badge-icon pi {{ badge.icon }}"></i>
+                        <span class="item-name">{{ badge.name }}</span>
+                    </div>
+                </div>
+                <div *ngIf="badges.length === 0" class="col-12 text-center p-5">
+                    <p class="text-color-secondary">Henüz hiç rozet kazanmadın. Quizleri çözmeye devam et!</p>
+                </div>
+            </div>
+        </p-card>
+    </div>
+</div>

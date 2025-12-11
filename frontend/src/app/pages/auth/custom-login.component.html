@@ -1,0 +1,64 @@
+<p-toast></p-toast>
+<div class="login-page-container flex flex-col items-center justify-center">
+    <!-- Uçuşan ikonlar için container -->
+    <div class="flying-icons">
+        <span>🧮</span>
+        <span>🔬</span>
+        <span>🌍</span>
+        <span>📖</span>
+        <span>➕</span>
+        <span>🧬</span>
+        <span>🏛️</span>
+        <span>✍️</span>
+        <span>➗</span>
+        <span>🧪</span>
+        <span>🗺️</span>
+        <span>📚</span>
+    </div>
+
+    <div
+        style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%); position: relative; z-index: 1;">
+        <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
+            <div class="text-center mb-8">
+                <img src="assets/images/tigin-logo.png" alt="Tigin Logo" class="mb-8 w-32 shrink-0 mx-auto" />
+                <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Hoş Geldiniz!</div>
+            </div>
+
+
+            <form [formGroup]="loginForm" (ngSubmit)="login()">
+                <div [ngClass]="{'shake-effect': loginError}">
+
+                    <p-iconField iconPosition="left" class="mb-4">
+                        <p-inputIcon class="pi pi-envelope"></p-inputIcon>
+                        <input pInputText id="email" type="text" placeholder="Email" class="w-full p-inputtext-lg"
+                            formControlName="email" />
+                    </p-iconField>
+
+                    <p-iconField iconPosition="left" class="mb-4">
+                        <p-inputIcon class="pi pi-lock"></p-inputIcon>
+                        <p-password id="password" placeholder="Şifre" [toggleMask]="true" styleClass="w-full"
+                            inputStyleClass="p-inputtext-lg" [fluid]="true" [feedback]="false"
+                            formControlName="password"></p-password>
+                    </p-iconField>
+
+                    <div class="flex items-center justify-between mt-4 mb-8 gap-8">
+                        <div class="flex items-center">
+
+                            <p-checkbox id="rememberme" [binary]="true" styleClass="mr-2"
+                                formControlName="rememberMe"></p-checkbox>
+                            <label for="rememberme">Beni hatırla</label>
+                        </div>
+                        <a routerLink="/register" pButton label="Hesap Oluştur"
+                            class="p-button-outlined p-button-sm"></a>
+                    </div>
+
+                    <div class="text-center">
+                        <button pButton label="Giriş Yap" icon="pi pi-sign-in" iconPos="right" styleClass="p-button-lg"
+                            type="submit" [disabled]="loginForm.invalid"></button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

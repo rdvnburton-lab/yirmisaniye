@@ -1,0 +1,53 @@
+<p-toast></p-toast>
+<div class="user-profile-page">
+    <p-progressSpinner *ngIf="loading"></p-progressSpinner>
+
+    <p-card *ngIf="error" header="Hata">
+        <p>{{ error }}</p>
+        <button pButton type="button" label="Geri Dön" icon="pi pi-arrow-left"
+            (click)="router.navigate(['/app/friends'])"></button>
+    </p-card>
+
+    <div *ngIf="!loading && profile" class="grid justify-content-center">
+        <div class="col-12 md:col-8 lg:col-6">
+            <p-card>
+                <div class="text-center">
+                    <p-avatar [image]="profile.user.profile_picture || 'assets/images/avatar-placeholder.png'"
+                        styleClass="w-9rem h-9rem mb-3" shape="circle"></p-avatar>
+                    <h2 class="text-3xl font-bold mb-1">{{ profile.user.username }}</h2>
+                    <p class="text-color-secondary">Üyelik Tarihi: {{ profile.user.created_at | date:'dd.MM.yyyy' }}</p>
+
+                    <div *ngIf="profile.friendshipStatus !== 'self'" class="mt-4">
+                        <p-button *ngIf="profile.friendshipStatus === 'none'" label="Arkadaş Ekle"
+                            icon="pi pi-user-plus" (click)="sendRequest()"></p-button>
+                        <p-button *ngIf="profile.friendshipStatus === 'pending'" label="İstek Gönderildi"
+                            icon="pi pi-clock" [disabled]="true" styleClass="p-button-secondary"></p-button>
+                        <p-button *ngIf="profile.friendshipStatus === 'accepted'" label="Arkadaşsınız"
+                            icon="pi pi-users" [disabled]="true" styleClass="p-button-success"></p-button>
+                    </div>
+                </div>
+
+                <p-divider layout="horizontal" align="center" styleClass="my-5">
+                    <b>İstatistikler</b>
+                </p-divider>
+
+                <div class="grid text-center">
+                    <div class="col-6">
+                        <div class="p-3">
+                            <i class="pi pi-star-fill text-yellow-500 text-4xl mb-2"></i>
+                            <div class="text-2xl font-bold">{{ profile.stats.total_score }}</div>
+                            <div class="text-sm text-color-secondary">Toplam Puan</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3">
+                            <i class="pi pi-book text-blue-500 text-4xl mb-2"></i>
+                            <div class="text-2xl font-bold">{{ profile.stats.quizzes_completed }}</div>
+                            <div class="text-sm text-color-secondary">Tamamlanan Quiz</div>
+                        </div>
+                    </div>
+                </div>
+            </p-card>
+        </div>
+    </div>
+</div>

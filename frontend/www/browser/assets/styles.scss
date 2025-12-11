@@ -1,0 +1,63 @@
+/* You can add global styles to this file, and also import other style files */
+@use "primeflex/primeflex.scss";
+@use './tailwind.css';
+@use 'primeicons/primeicons.css'; 
+@use './layout/layout.scss';
+// @use './demo/demo.scss'; // Grid sistemini bozabilecek demo stillerini devre dışı bırak
+
+/* Global Arka Plan ve İkon Stilleri */
+.flying-icons {
+  position: fixed; /* Tüm sayfa üzerinde sabit kalması için */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1; /* İçeriğin arkasında kalması için */
+}
+
+.flying-icons span {
+  position: absolute;
+  bottom: -50px; /* Ekranın altından başlasın */
+  font-size: 3.5rem;
+  color: rgba(121, 85, 72, 0.4); /* Sıcak arka planda belirgin olması için kahverengi tonu */
+  animation: fly-up 10s linear infinite;
+}
+
+/* Her bir ikona farklı başlangıç pozisyonu ve animasyon gecikmesi verelim */
+.flying-icons span:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 15s; font-size: 4rem; }
+.flying-icons span:nth-child(2) { left: 20%; animation-delay: 2s; animation-duration: 12s; }
+.flying-icons span:nth-child(3) { left: 30%; animation-delay: 4s; animation-duration: 18s; font-size: 3.3rem; }
+.flying-icons span:nth-child(4) { left: 40%; animation-delay: 1s; animation-duration: 20s; }
+.flying-icons span:nth-child(5) { left: 50%; animation-delay: 3s; animation-duration: 14s; font-size: 3.7rem; }
+.flying-icons span:nth-child(6) { left: 60%; animation-delay: 5s; animation-duration: 16s; }
+.flying-icons span:nth-child(7) { left: 70%; animation-delay: 0.5s; animation-duration: 19s; font-size: 3.2rem; }
+.flying-icons span:nth-child(8) { left: 80%; animation-delay: 2.5s; animation-duration: 13s; }
+.flying-icons span:nth-child(9) { left: 85%; animation-delay: 6s; animation-duration: 11s; font-size: 4.3rem; }
+.flying-icons span:nth-child(10) { left: 5%; animation-delay: 7s; animation-duration: 17s; }
+.flying-icons span:nth-child(11) { left: 65%; animation-delay: 8s; animation-duration: 14s; font-size: 3.4rem; }
+.flying-icons span:nth-child(12) { left: 95%; animation-delay: 1s; animation-duration: 22s; }
+
+/* Uçuşma animasyonu */
+@keyframes fly-up {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-120vh) rotate(720deg); /* Ekranın üstünden dışarı çıksın ve dönsün */
+    opacity: 0;
+  }
+}
+
+@keyframes gradient-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}

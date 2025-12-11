@@ -1,0 +1,37 @@
+:host ::ng-deep {
+    .leaderboard-list {
+        max-width: 600px; // Kartların maksimum genişliği
+        margin: 0 auto; // Kartları ortala
+    }
+
+    .leaderboard-item {
+        background-color: var(--surface-card);
+        border: 1px solid var(--surface-border);
+        transition: transform 0.2s, box-shadow 0.2s;
+
+        &:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+    }
+
+    .rank-gold {
+        background: linear-gradient(45deg, #FFD700, #FFA500);
+        border-left: 5px solid #FFC107 !important;
+        color: #fff;
+        .score { color: #fff; }
+    }
+    .rank-silver {
+        background: linear-gradient(45deg, #E0E0E0, #BDBDBD);
+        border-left: 5px solid #9E9E9E !important;
+        color: var(--text-color);
+        .score { color: var(--text-color); }
+    }
+    .rank-bronze {
+        background: linear-gradient(45deg, #CD7F32, #A0522D);
+        border-left: 5px solid #8D6E63 !important;
+        color: #fff;
+        .score { color: #fff; }
+    }
+
+}

@@ -1,0 +1,85 @@
+<div class="stats-page p-fluid">
+    <p-progressSpinner *ngIf="loading"></p-progressSpinner>
+
+    <div *ngIf="error" class="p-message p-message-error">{{ error }}</div>
+
+    <div *ngIf="!loading && stats" class="grid">
+        <!-- Genel İstatistikler -->
+        <div class="col-12 lg:col-4">
+            <p-card header="Genel Bakış" styleClass="h-full">
+                <div class="grid text-center">
+                    <div class="col-6 stat-box">
+                        <i class="pi pi-star-fill text-yellow-500 text-3xl mb-2"></i>
+                        <div class="text-2xl font-bold text-primary">{{ stats.total_score }}</div>
+                        <div class="text-sm text-color-secondary">Toplam Puan</div>
+                    </div>
+                    <div class="col-6 stat-box">
+                        <i class="pi pi-book text-blue-500 text-3xl mb-2"></i>
+                        <div class="text-2xl font-bold">{{ stats.quizzes_completed }}</div>
+                        <div class="text-sm text-color-secondary">Quiz Sayısı</div>
+                    </div>
+                    <div class="col-6 stat-box">
+                        <i class="pi pi-check-circle text-green-500 text-3xl mb-2"></i>
+                        <div class="text-2xl font-bold">{{ stats.total_correct_answers }}</div>
+                        <div class="text-sm text-color-secondary">Doğru Cevap</div>
+                    </div>
+                    <div class="col-6 stat-box">
+                        <i class="pi pi-times-circle text-red-500 text-3xl mb-2"></i>
+                        <div class="text-2xl font-bold">{{ stats.total_wrong_answers }}</div>
+                        <div class="text-sm text-color-secondary">Yanlış Cevap</div>
+                    </div>
+                </div>
+                <p-divider></p-divider>
+                <div class="w-full px-3">
+                    <div class="font-semibold mb-2">Genel Başarı Oranı</div>
+                    <p-progressBar [value]="stats.overall_success_rate" [showValue]="true" styleClass="h-2rem">
+                        <span class="font-bold text-lg">{{ stats.overall_success_rate }}%</span>
+                    </p-progressBar>
+                </div>
+            </p-card>
+        </div>
+
+        <!-- Zamanla Performans Grafiği -->
+        <div class="col-12 lg:col-8">
+            <p-card header="Son 30 Günlük Performans" styleClass="h-full">
+                <p-chart type="line" [data]="performanceChartData" [options]="performanceChartOptions"></p-chart>
+            </p-card>
+        </div>
+
+        <!-- En İyi Konular -->
+        <div class="col-12 lg:col-6">
+            <p-card header="En Başarılı Konuların" styleClass="h-full">
+                <ul class="list-none p-0 m-0">
+                    <li *ngFor="let topic of stats.best_topics"
+                        class="flex align-items-center justify-content-between mb-3 p-2 border-round hover:surface-100">
+                        <div class="flex align-items-center">
+                            <i class="pi {{ topic.subject_icon || 'pi-tag' }} text-xl mr-3 text-primary"></i>
+                            <div>
+                                <span class="font-semibold">{{ topic.topic_name }}</span>
+                                <div class="text-sm text-color-secondary">{{ topic.subject_name }}</div>
+                            </div>
+                        </div>
+                        <p-tag [value]="(topic.success_rate | number:'1.0-0') + '%'" severity="success"
+                            [rounded]="true"></p-tag>
+                    </li>
+                    <li *ngIf="stats.best_topics.length === 0" class="text-center p-3">
+                        <span class="text-color-secondary">Henüz yeterli veri yok.</span>
+                    </li>
+                </ul>
+            </p-card>
+        </div>
+
+        <!-- Zorluk Seviyesine Göre Performans -->
+        <div class="col-12 lg:col-6">
+            <p-card header="Zorluk Seviyesi Analizi" styleClass="h-full">
+                <div class="h-full flex flex-column align-items-center justify-content-center">
+                    <p-chart *ngIf="difficultyChartData" type="doughnut" [data]="difficultyChartData"
+                        [options]="difficultyChartOptions" height="250px"></p-chart>
+                    <div *ngIf="!difficultyChartData" class="text-center p-3">
+                        <span class="text-color-secondary">Henüz yeterli veri yok.</span>
+                    </div>
+                </div>
+            </p-card>
+        </div>
+    </div>
+</div>

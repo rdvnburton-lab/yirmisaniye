@@ -1,0 +1,59 @@
+<div class="card">
+    <p-card header="Quiz Geçmişim">
+        <p-table #dt [value]="history" [paginator]="true" [rows]="10" responsiveLayout="scroll"
+            [globalFilterFields]="['subject_name', 'topic_name']" styleClass="p-datatable-striped">
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <!-- Buton her zaman en solda -->
+                    <th class="w-1"></th>
+                    <th pSortableColumn="subject_name">Ders <p-sortIcon field="subject_name"></p-sortIcon></th>
+                    <th pSortableColumn="topic_name">Konu <p-sortIcon field="topic_name"></p-sortIcon></th>
+                    <th pSortableColumn="score">Skor <p-sortIcon field="score"></p-sortIcon></th>
+                    <th pSortableColumn="score">Başarı <p-sortIcon field="score"></p-sortIcon></th>
+                    <th pSortableColumn="difficulty">Zorluk <p-sortIcon field="difficulty"></p-sortIcon></th>
+                    <th pSortableColumn="created_at">Tarih <p-sortIcon field="created_at"></p-sortIcon></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-quiz let-rowIndex="rowIndex">
+                <tr>
+                    <!-- Buton her zaman en solda -->
+                    <td>
+                        <button pButton pRipple type="button" icon="pi pi-search" (click)="viewDetails(quiz.quiz_id)"
+                            class="p-button-rounded p-button-text"></button>
+                    </td>
+                    <td>{{ quiz.subject_name }}</td>
+                    <td>{{ quiz.topic_name }}</td>
+                    <td>{{ quiz.score }} / {{ quiz.total_questions }}</td>
+                    <td>
+                        <div class="flex align-items-center">
+                            <p-progressBar [value]="calculatePercentage(quiz.score, quiz.total_questions)"
+                                [showValue]="false" styleClass="h-1rem flex-1"></p-progressBar>
+                            <span class="ml-2 font-bold">{{ calculatePercentage(quiz.score, quiz.total_questions)
+                                }}%</span>
+                        </div>
+                    </td>
+                    <td><p-tag [severity]="getSeverity(quiz.difficulty) || 'info'" [value]="quiz.difficulty"></p-tag>
+                    </td>
+                    <td>{{ quiz.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="loadingbody">
+                <tr>
+                    <td><p-skeleton shape="circle" size="2rem"></p-skeleton></td>
+                    <td><p-skeleton></p-skeleton></td>
+                    <td><p-skeleton></p-skeleton></td>
+                    <td><p-skeleton></p-skeleton></td>
+                    <td><p-skeleton></p-skeleton></td>
+                    <td><p-skeleton></p-skeleton></td>
+                    <td><p-skeleton></p-skeleton></td>
+                    <td><p-skeleton></p-skeleton></td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="7">Henüz tamamlanmış bir quiz bulunmuyor.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </p-card>
+</div>

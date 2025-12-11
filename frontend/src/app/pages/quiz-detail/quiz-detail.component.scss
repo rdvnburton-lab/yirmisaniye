@@ -1,0 +1,13 @@
+.question-card {
+    position: relative;
+    overflow: hidden; // İkonun kart dışına taşmasını engeller
+
+    .watermark-icon {
+        position: absolute;
+        font-size: 16rem; // İkon boyutunu daha da artırdık
+        opacity: 0.08; // Şeffaflığı biraz daha azalttık
+        right: 0.5rem;
+        transform: rotate(-15deg); // Hafif eğim
+        pointer-events: none; // İkonun tıklanmasını engeller
+    }
+}

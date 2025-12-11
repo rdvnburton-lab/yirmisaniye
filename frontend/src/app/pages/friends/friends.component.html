@@ -1,0 +1,127 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+<div class="friends-page">
+    <p-card>
+        <ng-template pTemplate="title">Arkadaşlar</ng-template>
+        <ng-template pTemplate="content">
+            <div class="grid">
+                <!-- Arkadaş Ekle Bölümü -->
+                <div class="col-12 md:col-4">
+                    <div class="p-fluid">
+                        <div class="field">
+                            <label for="username">Kullanıcı Adı ile Arkadaş Ekle</label>
+                            <input id="username" type="text" pInputText [(ngModel)]="usernameToAdd"
+                                (keyup.enter)="sendRequest()" placeholder="Arkadaşının kullanıcı adını gir">
+                        </div>
+                        <p-button label="İstek Gönder" icon="pi pi-send" (click)="confirmSendRequest($event)"
+                            [disabled]="!usernameToAdd.trim()"></p-button>
+                    </div>
+                </div>
+
+                <!-- İstekler Bölümü -->
+                <div class="col-12 md:col-8">
+                    <h5>Arkadaşlık İstekleri <p-badge *ngIf="requests.length > 0" [value]="requests.length"
+                            severity="danger"></p-badge></h5>
+                    <p-progressSpinner *ngIf="loadingRequests"></p-progressSpinner>
+                    <div *ngIf="!loadingRequests">
+                        <ul *ngIf="requests.length > 0" class="list-none p-0 m-0">
+                            <li *ngFor="let request of requests"
+                                class="flex align-items-center justify-content-between p-3 mb-2 surface-100 border-round">
+                                <div class="flex align-items-center">
+                                    <p-avatar
+                                        [image]="request.profile_picture || 'assets/images/avatar-placeholder.png'"
+                                        shape="circle" size="large" class="mr-3"></p-avatar>
+                                    <span class="font-bold text-lg">{{ request.username }}</span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <p-button icon="pi pi-check" (click)="respondToRequest(request.id, 'accept')"
+                                        styleClass="p-button-success p-button-rounded p-button-sm"></p-button>
+                                    <p-button icon="pi pi-times" (click)="respondToRequest(request.id, 'reject')"
+                                        styleClass="p-button-danger p-button-rounded p-button-sm"></p-button>
+                                </div>
+                            </li>
+                        </ul>
+                        <div *ngIf="requests.length === 0" class="text-center p-5">
+                            <i class="pi pi-inbox text-3xl text-color-secondary mb-3"></i>
+                            <p class="text-color-secondary">Yeni arkadaşlık isteğin yok.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p-divider></p-divider>
+
+            <!-- Arkadaşlarım Listesi -->
+            <h5>Arkadaşlarım</h5>
+            <p-progressSpinner *ngIf="loadingFriends"></p-progressSpinner>
+            <div *ngIf="!loadingFriends" class="grid">
+                <div *ngFor="let friend of friends" class="col-12 md:col-6 lg:col-4">
+                    <div
+                        class="friend-card flex align-items-center justify-content-between p-3 surface-100 border-round">
+                        <div (click)="showUserProfile(friend.username)"
+                            class="flex align-items-center no-underline text-color w-full cursor-pointer">
+                            <p-avatar [image]="friend.profile_picture || 'assets/images/avatar-placeholder.png'"
+                                shape="circle" size="large" class="mr-3"></p-avatar>
+                            <span class="font-bold text-lg">{{ friend.username }}</span>
+                        </div>
+                        <p-button icon="pi pi-user-minus" styleClass="p-button-danger p-button-rounded p-button-text"
+                            (click)="confirmRemoveFriend($event, friend)" pTooltip="Arkadaşlıktan Çıkar"></p-button>
+                    </div>
+                </div>
+                <div *ngIf="friends.length === 0" class="col-12 text-center p-5">
+                    <i class="pi pi-users text-3xl text-color-secondary mb-3"></i>
+                    <p class="text-color-secondary">Henüz hiç arkadaşın yok.</p>
+                </div>
+            </div>
+        </ng-template>
+    </p-card>
+</div>
+
+<!-- Arkadaş Profili Görüntüleme Modalı -->
+<p-dialog [(visible)]="displayProfileDialog" [modal]="true" [style]="{width: '500px'}" [showHeader]="false"
+    [draggable]="false" [resizable]="false">
+    <div class="user-profile-modal text-center pt-4">
+        <p-progressSpinner *ngIf="loadingProfile"></p-progressSpinner>
+
+        <div *ngIf="!loadingProfile && selectedProfile">
+            <p-avatar [image]="selectedProfile.user.profile_picture || 'assets/images/avatar-placeholder.png'"
+                styleClass="w-9rem h-9rem mb-3" shape="circle"></p-avatar>
+            <h2 class="text-3xl font-bold mb-1">{{ selectedProfile.user.username }}</h2>
+            <p class="text-color-secondary">Üyelik Tarihi: {{ selectedProfile.user.created_at | date:'dd.MM.yyyy' }}</p>
+
+            <div *ngIf="selectedProfile.friendshipStatus !== 'self'" class="mt-4">
+                <p-button *ngIf="selectedProfile.friendshipStatus === 'none'" label="Arkadaş Ekle"
+                    icon="pi pi-user-plus" (click)="sendRequestFromModal()"></p-button>
+                <p-button *ngIf="selectedProfile.friendshipStatus === 'pending'" label="İstek Gönderildi"
+                    icon="pi pi-clock" [disabled]="true" styleClass="p-button-secondary"></p-button>
+                <p-button *ngIf="selectedProfile.friendshipStatus === 'accepted'" label="Arkadaşsınız"
+                    icon="pi pi-users" [disabled]="true" styleClass="p-button-success"></p-button>
+            </div>
+
+            <p-divider layout="horizontal" align="center" styleClass="my-5">
+                <b>İstatistikler</b>
+            </p-divider>
+
+            <div class="grid text-center">
+                <div class="col-6">
+                    <div class="p-3">
+                        <i class="pi pi-star-fill text-yellow-500 text-4xl mb-2"></i>
+                        <div class="text-2xl font-bold">{{ selectedProfile.stats.total_score }}</div>
+                        <div class="text-sm text-color-secondary">Toplam Puan</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-3">
+                        <i class="pi pi-book text-blue-500 text-4xl mb-2"></i>
+                        <div class="text-2xl font-bold">{{ selectedProfile.stats.quizzes_completed }}</div>
+                        <div class="text-sm text-color-secondary">Tamamlanan Quiz</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button label="Kapat" icon="pi pi-times" (click)="displayProfileDialog=false"
+            styleClass="p-button-text"></p-button>
+    </ng-template>
+</p-dialog>

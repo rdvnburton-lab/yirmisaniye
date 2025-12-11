@@ -1,0 +1,32 @@
+/* You can add component-specific styles here if needed in the future. */
+/* For now, the PrimeNG and Tailwind classes handle the layout. */
+:host {
+    display: block;
+}
+
+.wallet-card {
+    background: linear-gradient(135deg, var(--surface-100) 0%, var(--surface-0) 100%);
+}
+
+.wallet-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+}
+
+.wallet-stat i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.wallet-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.wallet-label {
+    font-size: 0.9rem;
+    color: var(--text-color-secondary);
+}

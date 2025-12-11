@@ -1,0 +1,328 @@
+<div class="quiz-container p-d-flex p-jc-center p-ai-center">
+  <p-toast></p-toast>
+
+
+  <!-- Yükleniyor durumu -->
+  <p-progressSpinner *ngIf="loading"></p-progressSpinner>
+
+  <!-- Hata durumu -->
+  <p-card *ngIf="!loading && error" header="Hata">
+    <p>{{ error }}</p>
+  </p-card>
+
+  <!-- Ders ve Konu Seçim Ekranı -->
+  <div *ngIf="!loading && !quizStarted && !error">
+
+    <!-- Ders Seçimi -->
+    <div *ngIf="currentView === 'subject'">
+      <div class="quiz-step-header">
+        <i class="pi pi-book mr-2"></i> Bir Ders Seç
+      </div>
+      <div class="grid category-section justify-content-center mt-4">
+        <div *ngFor="let subject of subjects" class="col-6 md:col-4 lg:col-2">
+          <div class="category-card h-full" (click)="selectSubject(subject)"
+            [style.border-color]="getIconForSubject(subject.subject_name, true)">
+            <i class="pi {{ subject.icon }} category-icon"
+              [style.color]="getIconForSubject(subject.subject_name, true)"></i>
+            <span class="category-name">{{ subject.subject_name }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Konu Seçimi -->
+    <div *ngIf="currentView === 'topic'">
+      <div class="quiz-step-header">
+        <i class="pi pi-tags mr-2"></i> Konu Seçimi
+      </div>
+      <div class="grid category-section justify-content-center mt-4">
+        <div *ngFor="let topic of topics" class="col-6 md:col-4 lg:col-3">
+          <div class="category-card h-full" (click)="toggleTopicSelection(topic)"
+            [ngClass]="{'selected-card': isTopicSelected(topic)}"
+            [style.border-color]="getIconForSubject(selectedSubject?.subject_name || '', true)">
+            <i class="category-icon" [ngClass]="getTopicIcon(topic)"
+              [style.color]="getIconForSubject(selectedSubject?.subject_name || '', true)"></i>
+            <span class="category-name">{{ topic.topic_name }}</span>
+            <i *ngIf="isTopicSelected(topic)" class="pi pi-check-circle selected-watermark"></i>
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-content-between mt-5">
+        <p-button label="Geri" icon="pi pi-arrow-left" (click)="currentView = 'subject'"
+          styleClass="p-button-secondary"></p-button>
+        <p-button label="İleri" icon="pi pi-arrow-right" iconPos="right" (click)="currentView = 'settings'"
+          [disabled]="selectedTopics.length === 0"></p-button>
+      </div>
+    </div>
+
+    <!-- Ayarlar -->
+    <div *ngIf="currentView === 'settings'">
+      <div class="quiz-step-header">
+        <i class="pi pi-cog mr-2"></i> Quiz Ayarları
+      </div>
+      <div class="grid category-section justify-content-center mt-4">
+        <!-- Zorluk Seviyesi Kartları -->
+        <div *ngFor="let difficulty of difficulties" class="col-6 md:col-4 lg:col-3">
+          <div class="category-card h-full" (click)="selectedDifficulty = difficulty"
+            [ngClass]="{'selected-card': selectedDifficulty?.value === difficulty.value}"
+            [style.border-color]="difficulty.color">
+            <i class="pi {{ difficulty.icon }} category-icon" [style.color]="difficulty.color"></i>
+            <span class="category-name">{{ difficulty.name }}</span>
+            <i *ngIf="selectedDifficulty?.value === difficulty.value" class="pi pi-check-circle selected-watermark"></i>
+          </div>
+        </div>
+
+        <!-- Süre Ayarı Kartı -->
+        <div class="col-6 md:col-4 lg:col-3">
+          <div class="category-card h-full" (click)="isTimedQuiz = !isTimedQuiz"
+            [ngClass]="{'selected-card': isTimedQuiz}">
+            <i class="pi pi-clock category-icon"></i>
+            <span class="category-name">{{ isTimedQuiz ? 'Süreli' : 'Süresiz' }}</span>
+            <small *ngIf="isTimedQuiz" class="timed-warning-text mt-2">
+              Her soru için <strong>{{ questionTime }} saniye!</strong>
+            </small>
+            <i *ngIf="isTimedQuiz" class="pi pi-check-circle selected-watermark"></i>
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-content-between mt-5">
+        <p-button label="Geri" icon="pi pi-arrow-left" (click)="currentView = 'topic'"
+          styleClass="p-button-secondary"></p-button>
+        <p-button label="Onayla" icon="pi pi-check" iconPos="right" (click)="currentView = 'confirm'"
+          [disabled]="!selectedDifficulty"></p-button>
+      </div>
+    </div>
+
+    <!-- Onay Ekranı -->
+    <p-card *ngIf="currentView === 'confirm'" styleClass="quiz-setup-card">
+      <ng-template pTemplate="title">
+        <i class="pi pi-check-square mr-2"></i> Seçimleri Onayla
+      </ng-template>
+      <div class="surface-ground p-4 border-round">
+        <ul class="list-none p-0 m-0">
+          <li class="flex align-items-center justify-content-between mb-3">
+            <span class="font-semibold text-gray-600"><i class="pi pi-book mr-2"></i>Ders:</span>
+            <span class="font-bold">{{ selectedSubject?.subject_name }}</span>
+          </li>
+          <li class="flex align-items-center justify-content-between mb-3">
+            <span class="font-semibold text-gray-600"><i class="pi pi-tags mr-2"></i>Konular:</span>
+            <span class="text-right font-bold">{{ selectedTopicsText }}</span>
+          </li>
+          <li class="flex align-items-center justify-content-between mb-3">
+            <span class="font-semibold text-gray-600"><i class="pi pi-chart-bar mr-2"></i>Zorluk:</span>
+            <span class="font-bold">{{ selectedDifficulty?.name }}</span>
+          </li>
+          <li class="flex align-items-center justify-content-between">
+            <span class="font-semibold text-gray-600"><i class="pi pi-clock mr-2"></i>Süreli mi?</span>
+            <span class="font-bold">{{ isTimedQuiz ? 'Evet' : 'Hayır' }}</span>
+          </li>
+        </ul>
+      </div>
+      <ng-template pTemplate="footer">
+        <div class="flex justify-content-between">
+          <p-button label="Geri" icon="pi pi-arrow-left" (click)="currentView = 'settings'"
+            styleClass="p-button-secondary"></p-button>
+          <p-button label="Hadi Başlayalım!" icon="pi pi-rocket" (click)="initiateQuiz()"></p-button>
+        </div>
+      </ng-template>
+    </p-card>
+  </div>
+
+  <!-- Quiz Ekranı -->
+  <div *ngIf="quizStarted && !loading && !error && questions.length > 0 && !quizFinished" class="quiz-active-container">
+    <!-- Ana Puan Göstergesi -->
+    <div class="main-score-display" [class.time-warning-pulse]="isTimedQuiz && timeLeft <= 5">
+      <!-- Yeni Arka Plan İlerleme Çubuğu -->
+      <div class="background-progress" *ngIf="isTimedQuiz" [style.width.%]="(timeLeft / questionTime) * 100"></div>
+
+      <!-- İçerik Katmanı -->
+      <div class="quiz-stat content-layer">
+        <span class="stat-label">SORU</span>
+        <span class="stat-value">{{ currentQuestionIndex + 1 }}/{{ questions.length }}</span>
+      </div>
+      <div class="score-container content-layer">
+        <span class="score-label">PUAN</span>
+        <span class="score-value">{{ currentScore }}</span>
+      </div>
+      <div class="quiz-stat content-layer" [class.invisible]="!isTimedQuiz">
+        <span class="stat-label">SÜRE</span>
+        <span class="stat-value">{{ timeLeft }}s</span>
+      </div>
+    </div>
+
+    <!-- Kombo Animasyonu -->
+    <div *ngIf="showComboAnimation" class="combo-animation">
+      <div class="combo-main">
+        <i class="pi pi-bolt combo-icon"></i>
+        <span class="combo-text">KOMBO!</span>
+      </div>
+      <span class="combo-points">+5 Puan</span>
+    </div>
+
+    <!-- Quiz Soruları (puan göstergesi kaldırıldı) -->
+    <p-card class="w-full quiz-question-card">
+      <!-- Header'daki progress bar kaldırıldı -->
+      <!-- Subtitle kaldırıldı, bilgiler yukarı taşındı -->
+      <ng-template pTemplate="title">
+        {{ questions[currentQuestionIndex].question_text }}
+      </ng-template>
+
+      <!-- Soru Resmi (varsa) -->
+      <div *ngIf="questions[currentQuestionIndex].image_path" class="question-image my-3 text-center">
+        <!-- Not: Resim yolu backend'den gelen veriye göre ayarlanmalıdır. Örn: 'assets/images/' + image_path -->
+        <img [src]="'assets/images/' + questions[currentQuestionIndex].image_path" alt="Soru Resmi"
+          style="max-width: 100%; max-height: 200px;">
+      </div>
+
+      <!-- Yeni ve Eğlenceli Seçenek Kartları -->
+      <div class="grid options-grid my-4">
+        <div class="col-12 md:col-6" *ngFor="let option of questions[currentQuestionIndex].options; let i = index">
+          <div #optionCard class="option-card p-3 border-round-lg text-center transition-all transition-duration-200"
+            [class.cursor-pointer]="!answerSubmitted" (click)="!answerSubmitted && selectOption(option.id)">
+            <span class="option-prefix font-bold mr-3">{{ 'ABCD'[i] }}</span>
+            <span class="text-lg">{{ option.option_text }}</span>
+          </div>
+        </div>
+      </div>
+
+      <ng-template pTemplate="footer">
+        <div class="flex justify-content-between align-items-center gap-2">
+          <p-button *ngIf="questions[currentQuestionIndex].hint" label="İpucu" icon="pi pi-question-circle"
+            (click)="showHint()" styleClass="p-button-help p-button-outlined"></p-button>
+          <p-button label="Sonraki Soru" icon="pi pi-arrow-right" iconPos="right" (click)="nextQuestion()"
+            [disabled]="!answerSubmitted">
+          </p-button>
+        </div>
+      </ng-template>
+    </p-card>
+  </div>
+
+  <!-- Quiz Bitti -->
+  <div *ngIf="quizFinished">
+    <p-card>
+      <ng-template pTemplate="content">
+        <!-- Sonuç Özeti -->
+        <div *ngIf="!showReview">
+          <div class="text-center mb-5">
+            <h2 class="text-3xl font-bold mb-3">
+              <i class="pi" [ngClass]="{
+                  'pi-star-fill text-yellow-500': successPercentage >= 90,
+                  'pi-thumbs-up-fill text-green-500': successPercentage >= 70 && successPercentage < 90,
+                  'pi-check-circle text-blue-500': successPercentage >= 50 && successPercentage < 70,
+                  'pi-times-circle text-red-500': successPercentage < 50
+                }" style="font-size: 2.5rem;"></i>
+              <span class="ml-3">
+                <ng-container *ngIf="successPercentage >= 90">Mükemmel İş!</ng-container>
+                <ng-container *ngIf="successPercentage >= 70 && successPercentage < 90">Harika!</ng-container>
+                <ng-container *ngIf="successPercentage >= 50 && successPercentage < 70">İyi İş!</ng-container>
+                <ng-container *ngIf="successPercentage < 50">Biraz Daha Çalış!</ng-container>
+              </span>
+            </h2>
+            <p class="text-lg text-gray-600">Quizi başarıyla tamamladınız.</p>
+
+            <p class="text-4xl font-bold text-primary mt-4">Toplam Puanınız: {{ score }}</p>
+          </div>
+
+          <div class="grid text-center mt-5">
+            <div class="col-6">
+              <div class="p-3 border-round-md bg-green-100">
+                <span class="text-green-700 font-bold text-3xl">{{ correctAnswersCount }}</span>
+                <p class="text-green-600 m-0 text-lg">Doğru Cevap</p>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-3 border-round-md bg-red-100">
+                <span class="text-red-700 font-bold text-3xl">{{ wrongAnswersCount }}</span>
+                <p class="text-red-600 m-0 text-lg">Yanlış Cevap</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 flex justify-content-center gap-2">
+            <p-button label="Tekrar Oyna" icon="pi pi-refresh" (click)="resetQuiz()"
+              styleClass="p-button-secondary"></p-button>
+            <p-button label="Cevapları Gözden Geçir" icon="pi pi-search" (click)="showReview = true"></p-button>
+          </div>
+
+          <!-- Önceki performans özeti -->
+          <div *ngIf="previousPerformance.length > 0" class="my-5">
+            <p-divider align="center" styleClass="my-4">
+              <span class="font-semibold">Bu Dersteki Son Quizlerin</span>
+            </p-divider>
+            <div class="grid">
+              <div *ngFor="let prevQuiz of previousPerformance" class="col-12 md:col-4">
+                <div class="previous-performance-card p-3 border-round h-full">
+                  <div class="flex justify-content-between align-items-center mb-2">
+                    <span class="font-bold text-lg">Quiz #{{ prevQuiz.quiz_id }}</span>
+                    <span class="text-sm text-color-secondary">{{ prevQuiz.created_at | date:'dd.MM.yy' }}</span>
+                  </div>
+                  <div class="flex flex-wrap gap-2 mb-3 topic-icons-container">
+                    <i *ngFor="let icon of prevQuiz.topic_icons" class="pi {{ icon }} text-xl"
+                      [pTooltip]="prevQuiz.topic_names" tooltipPosition="bottom"></i>
+                  </div>
+                  <div class="flex justify-content-around">
+                    <span class="text-green-600 font-bold"><i class="pi pi-check-circle mr-1"></i> {{
+                      prevQuiz.correct_count }}</span>
+                    <span class="text-red-600 font-bold"><i class="pi pi-times-circle mr-1"></i> {{
+                      prevQuiz.wrong_count }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sosyal Medya Paylaşım Butonları -->
+          <div class="mt-5 text-center">
+            <p-divider align="center" styleClass="my-4"><span class="font-semibold">Sonucunu Paylaş</span></p-divider>
+            <div class="flex justify-content-center gap-3">
+              <p-button icon="pi pi-twitter" (click)="shareOn('twitter')" styleClass="p-button-rounded p-button-info"
+                pTooltip="Twitter'da Paylaş" tooltipPosition="bottom"></p-button>
+              <p-button icon="pi pi-facebook" (click)="shareOn('facebook')"
+                styleClass="p-button-rounded p-button-primary" pTooltip="Facebook'ta Paylaş"
+                tooltipPosition="bottom"></p-button>
+              <p-button icon="pi pi-whatsapp" (click)="shareOn('whatsapp')"
+                styleClass="p-button-rounded p-button-success" pTooltip="WhatsApp'ta Paylaş"
+                tooltipPosition="bottom"></p-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cevapları Gözden Geçirme Ekranı -->
+        <div *ngIf="showReview">
+          <div class="review-sticky-header">
+            <div class="flex justify-content-start mb-2">
+              <p-button label="Sonuçlara Dön" icon="pi pi-arrow-left" (click)="showReview = false"
+                styleClass="p-button-text"></p-button>
+            </div>
+            <p-divider align="center" styleClass="my-4">
+              <span class="font-semibold">Cevapların Analizi</span>
+            </p-divider>
+          </div>
+          <ul class="list-none p-0 m-0">
+            <li *ngFor="let question of questions; let i = index"
+              class="question-review-card mb-4 p-3 border-1 surface-border border-round" [ngClass]="{
+                'bg-green-50': getAnswerForQuestion(question.id).isCorrect, 
+                'bg-red-50': !getAnswerForQuestion(question.id).isCorrect
+              }">
+              <!-- Watermark İkonu -->
+              <i class="watermark-icon pi" [ngClass]="{
+                  'pi-check text-green-500': getAnswerForQuestion(question.id).isCorrect,
+                  'pi-times text-red-500': !getAnswerForQuestion(question.id).isCorrect
+                }"></i>
+              <!-- İçerik -->
+              <div class="relative z-1">
+                <p class="font-semibold m-0 mb-2">{{ i + 1 }}. {{ question.question_text }}</p>
+                <p class="m-0">Senin Cevabın: <span class="font-bold">{{
+                    getAnswerForQuestion(question.id).userAnswerText }}</span></p>
+                <p *ngIf="!getAnswerForQuestion(question.id).isCorrect" class="m-0 mt-1">
+                  Doğru Cevap: <span class="font-bold">{{ question.options[question.correctOptionId].option_text
+                    }}</span>
+                </p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </ng-template>
+    </p-card>
+  </div>
+</div>

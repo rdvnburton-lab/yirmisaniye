@@ -1,0 +1,30 @@
+.previous-performance-card {
+  background-color: var(--surface-50);
+  background-color: var(--surface-100); // Daha belirgin bir arka plan rengi
+  border: 1px solid var(--surface-border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  }
+
+  .ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  .topic-icons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center; // İkonları ortala
+    .pi {
+      color: var(--primary-color); // İkon rengini temanın ana rengi yap
+    }
+}
+  }
+}

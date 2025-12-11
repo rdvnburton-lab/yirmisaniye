@@ -19,3 +19,7 @@ npm-debug.log*
 .vscode
 .idea
 .DS_Store
+
+# Large files
+*.tar
+*.tar.gz

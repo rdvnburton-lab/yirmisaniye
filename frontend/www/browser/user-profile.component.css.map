@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/pages/user-profile/user-profile.component.scss", "src/app/pages/user-profile/user-profile.component.scss"],
+  "sourcesContent": [".user-profile-page .p-avatar {\r\n    border: 4px solid var(--surface-border);\r\n    box-shadow: 0 4px 10px rgba(0,0,0,0.1);\r\n}", ".user-profile-page .p-avatar {\n  border: 4px solid var(--surface-border);\n  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);\n}\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJmaWxlOi8vL0M6L1VzZXJzL0FkbWluaXN0cmF0b3IvRGVza3RvcC95aXJtaXNhbml5ZV9BTkdVTEFSL2Zyb250ZW5kL3NyYy9hcHAvcGFnZXMvdXNlci1wcm9maWxlL3VzZXItcHJvZmlsZS5jb21wb25lbnQuc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNJO0VBQ0EiLCJzb3VyY2VzQ29udGVudCI6WyIudXNlci1wcm9maWxlLXBhZ2UgLnAtYXZhdGFyIHtcclxuICAgIGJvcmRlcjogNHB4IHNvbGlkIHZhcigtLXN1cmZhY2UtYm9yZGVyKTtcclxuICAgIGJveC1zaGFkb3c6IDAgNHB4IDEwcHggcmdiYSgwLDAsMCwwLjEpO1xyXG59Il19 */"],
+  "mappings": ";AAAA,CAAA,kBAAA,CAAA;AACI,UAAA,IAAA,MAAA,IAAA;AACA,cAAA,EAAA,IAAA,KAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA;ACCJ;",
+  "names": []
+}

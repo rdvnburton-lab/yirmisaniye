@@ -1,0 +1,152 @@
+:host {
+  display: block;
+}
+
+.dashboard-container {
+  position: relative;
+  padding: 2rem;
+  text-align: center;
+  // Arka planı kaldırarak layout'taki animasyonun görünmesini sağlıyoruz
+  background: transparent;
+  height: calc(100vh - 9rem); // Footer ve Topbar yüksekliğini çıkar (min-height yerine height)
+  overflow: hidden; // Taşmaları ve kaydırma çubuğunu gizle
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Nunito', sans-serif; // Yeni fontu uygula
+}
+
+// 1. Başlık Animasyonu
+.header-section {
+  animation: slideDownFadeIn 1s ease-out forwards;
+  // Buzlu cam efekti için
+  background: rgba(var(--surface-a-rgb), 0.7);
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 3rem;
+}
+
+.welcome-title {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: var(--primary-color);
+  margin: 0;
+  font-family: 'Nunito', sans-serif; // Başlık için de fontu belirt
+  // text-shadow: 0 3px 6px rgba(0,0,0,0.2); // Sade arka planda gölgeye gerek yok
+}
+
+.welcome-subtitle {
+  font-size: 1.25rem;
+  color: var(--text-color-secondary);
+  margin-top: 0.5rem;
+}
+
+@keyframes slideDownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 2. Kategori Kartları ve Hover Animasyonu
+.category-section {
+  margin-bottom: 3rem;
+  gap: 2rem; // Kartlar genişlediği için aralarındaki boşluğu artır
+}
+
+.category-card {
+  // Buzlu cam efekti için
+  background: rgba(var(--surface-a-rgb), 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); // Safari uyumluluğu için
+  padding: 1.5rem;
+  border-radius: 12px;
+  border-bottom: 5px solid; // Renkli alt çizgiyi geri getiriyoruz
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    transform: translateY(-10px) perspective(1000px) rotateX(5deg);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.category-icon {
+  font-size: 3rem;
+  margin-bottom: 0.75rem;
+}
+
+.category-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-color);
+  font-family: 'Nunito', sans-serif; // Kart içindeki metin için de fontu belirt
+}
+
+// 3. Ana Başlat Butonu ve Animasyonu
+.start-section {
+  margin-top: 1rem;
+}
+
+.start-button {
+  font-size: 1.5rem !important;
+  padding: 1rem 2.5rem !important;
+  border-radius: 50px !important;
+  background: linear-gradient(45deg, #ff5f6d, #ffc371); /* Canlı bir gradient */
+  border: none;
+  box-shadow: 0 4px 20px rgba(255, 95, 109, 0.6); /* Daha belirgin bir gölge */
+  animation: glowing-button 2.5s infinite ease-in-out;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: linear-gradient(45deg, #ff5f6d, #ffc371); /* Hover durumunda arka plan rengini koru */
+    transform: scale(1.05);
+    box-shadow: 0 6px 25px rgba(255, 95, 109, 0.8); /* Parlamayı artır */
+  }
+}
+
+/* Mobil Cihazlar İçin Düzenlemeler */
+@media screen and (max-width: 768px) {
+  .dashboard-container {
+    height: auto; /* Yüksekliği içeriğe göre ayarla */
+    min-height: calc(100vh - 9rem); /* Minimum yüksekliği koru */
+    overflow-y: auto; /* Dikey kaydırmaya izin ver */
+    justify-content: flex-start; /* İçeriği yukarıdan başlat */
+    padding-top: 4rem; /* Üstten boşluk */
+  }
+
+  .welcome-title {
+    font-size: 2.5rem; /* Başlığı küçült */
+  }
+
+  .category-section {
+    margin-bottom: 2rem;
+  }
+
+  .start-section {
+    margin-bottom: 2rem; /* Alttan boşluk bırak */
+  }
+}
+
+@keyframes glowing-button {
+  0% {
+    box-shadow: 0 0 5px var(--primary-400);
+  }
+  50% { /* Animasyonun ortasında gölgeyi daha da belirginleştir */
+    box-shadow: 0 0 25px rgba(255, 195, 113, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 5px var(--primary-400);
+  }
+}

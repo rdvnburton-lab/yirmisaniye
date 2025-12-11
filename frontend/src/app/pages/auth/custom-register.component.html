@@ -1,0 +1,73 @@
+<div class="login-page-container flex flex-col items-center justify-center">
+    <!-- Uçuşan ikonlar için container -->
+    <div class="flying-icons">
+        <span>🧮</span>
+        <span>🔬</span>
+        <span>🌍</span>
+        <span>📖</span>
+        <span>➕</span>
+        <span>🧬</span>
+        <span>🏛️</span>
+        <span>✍️</span>
+        <span>➗</span>
+        <span>🧪</span>
+        <span>🗺️</span>
+        <span>📚</span>
+    </div>
+    <div
+        style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%); position: relative; z-index: 1;">
+        <div class="w-full bg-surface-0 dark:bg-surface-900 py-12 px-8 sm:px-20" style="border-radius: 53px">
+            <div class="text-center mb-8">
+                <img src="assets/images/tigin-logo.png" alt="Tigin Logo" class="mb-8 w-32 shrink-0 mx-auto" />
+                <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Hesap Oluştur</div>
+            </div>
+
+            <form [formGroup]="registerForm" (ngSubmit)="register()">
+                <div>
+                    <p-iconField iconPosition="left" class="mb-6">
+                        <p-inputIcon class="pi pi-user"></p-inputIcon>
+                        <input pInputText id="username" type="text" placeholder="Kullanıcı Adı"
+                            class="w-full p-inputtext-lg" formControlName="username"
+                            [ngClass]="{'p-invalid': registerForm.get('username')?.hasError('alreadyExists')}" />
+                    </p-iconField>
+
+                    <p-iconField iconPosition="left" class="mb-6">
+                        <p-inputIcon class="pi pi-envelope"></p-inputIcon>
+                        <input pInputText id="email" type="text" placeholder="Email" class="w-full p-inputtext-lg"
+                            formControlName="email"
+                            [ngClass]="{'p-invalid': registerForm.get('email')?.hasError('alreadyExists')}" />
+                    </p-iconField>
+
+                    <p-iconField iconPosition="left" class="mb-6">
+                        <p-inputIcon class="pi pi-lock"></p-inputIcon>
+                        <p-password id="password" placeholder="Şifre" [toggleMask]="true" styleClass="w-full"
+                            inputStyleClass="p-inputtext-lg" [fluid]="true" [feedback]="false"
+                            formControlName="password"></p-password>
+                    </p-iconField>
+
+                    <p-iconField iconPosition="left" class="mb-4">
+                        <p-inputIcon class="pi pi-lock"></p-inputIcon>
+                        <p-password id="confirmPassword" placeholder="Şifre Tekrar" [toggleMask]="true"
+                            styleClass="w-full" inputStyleClass="p-inputtext-lg" [fluid]="true" [feedback]="false"
+                            formControlName="confirmPassword"></p-password>
+                    </p-iconField>
+
+                    <div class="mb-6 text-center"
+                        *ngIf="registerForm.get('confirmPassword')?.touched && registerForm.hasError('passwordMismatch')">
+                        <small class="p-error">Şifreler eşleşmiyor!</small>
+                    </div>
+
+                    <div class="text-center mb-4">
+                        <button pButton label="Kayıt Ol" icon="pi pi-user-plus" iconPos="right" styleClass="p-button-lg"
+                            type="submit" [disabled]="registerForm.invalid"></button>
+                    </div>
+
+                    <div class="text-center">
+                        <a routerLink="/login" pButton label="Zaten hesabım var" class="p-button-text"></a>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
