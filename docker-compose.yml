@@ -15,8 +15,8 @@ services:
       DB_NAME: ${DB_NAME:-yirmisaniye_db}
       PORT: 3000
       JWT_SECRET: ${JWT_SECRET:-changeme}
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     depends_on:
       - db
     networks:
@@ -29,8 +29,8 @@ services:
       dockerfile: Dockerfile
     container_name: yirmisaniye-frontend
     restart: unless-stopped
-    ports:
-      - "4000:80" # Host'taki 4000 portunu container'daki 80 portuna yönlendir
+    expose:
+      - "80"
     depends_on:
       - backend
     networks:
@@ -59,8 +59,8 @@ services:
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
-    ports:
-      - "8080:80"
+    expose:
+      - "80"
     depends_on:
       - db
     networks:
