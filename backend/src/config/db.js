@@ -7,8 +7,12 @@ const pool = mysql.createPool({
   password: process.env.DB_PASSWORD, // 'password'
   database: process.env.DB_NAME,     // 'yirmisaniye_db'
   waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+  connectionLimit: 100,        // Artırın
+  queueLimit: 0,
+  connectTimeout: 20000,       // 20 saniye
+  acquireTimeout: 20000,
+  enableKeepAlive: true,       // Yeni ekleyin
+  keepAliveInitialDelay: 0
 });
 
 const createUsersTable = async () => {
