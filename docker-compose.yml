@@ -3,7 +3,9 @@ version: '3.8'
 services:
   # Backend Servisi (Node.js)
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: yirmisaniye-backend
     restart: unless-stopped
     environment:
@@ -22,7 +24,9 @@ services:
 
   # Frontend Servisi (Angular + Nginx)
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: yirmisaniye-frontend
     restart: unless-stopped
     ports:
