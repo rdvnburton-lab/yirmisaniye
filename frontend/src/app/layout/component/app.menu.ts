@@ -5,6 +5,8 @@ import { MenuItem } from 'primeng/api';
 import { AppMenuitem } from './app.menuitem';
 import { LayoutService } from '../service/layout.service';
 
+import { AuthService } from '../../pages/auth/auth.service';
+
 @Component({
     selector: 'app-menu',
     standalone: true,
@@ -20,6 +22,7 @@ export class AppMenu {
     model: MenuItem[] = [];
 
     layoutService = inject(LayoutService);
+    authService = inject(AuthService);
 
     ngOnInit() {
         this.model = [
@@ -30,19 +33,19 @@ export class AppMenu {
                     { label: 'Yeni Quiz Başlat', icon: 'pi pi-fw pi-play', routerLink: ['/app/quiz'] },
                     { label: 'Quiz Geçmişim', icon: 'pi pi-fw pi-history', routerLink: ['/app/history'] },
                     // YENİ EKLENEN SATIRLAR
-                    { 
-                        label: 'İstatistiklerim', 
-                        icon: 'pi pi-fw pi-chart-bar', 
-                        routerLink: ['/app/quiz-stats'] 
+                    {
+                        label: 'İstatistiklerim',
+                        icon: 'pi pi-fw pi-chart-bar',
+                        routerLink: ['/app/quiz-stats']
                     },
-                    { 
-                        label: 'Liderlik Tablosu', 
-                        icon: 'pi pi-fw pi-trophy', 
-                        routerLink: ['/app/leaderboard'] 
+                    {
+                        label: 'Liderlik Tablosu',
+                        icon: 'pi pi-fw pi-trophy',
+                        routerLink: ['/app/leaderboard']
                     }
                 ]
             },
-             {
+            {
                 label: 'Sosyal',
                 items: [
                     { label: 'Arkadaşlarım', icon: 'pi pi-fw pi-users', routerLink: ['/app/friends'] },
@@ -58,5 +61,18 @@ export class AppMenu {
                 ]
             }
         ];
+
+        console.log('Is Admin?', this.authService.isAdmin());
+        console.log('Current Role:', localStorage.getItem('role'));
+
+        if (this.authService.isAdmin()) {
+            console.log('Adding Admin Menu Item');
+            this.model.splice(1, 0, {
+                label: 'Yönetim',
+                items: [
+                    { label: 'Soru Yönetimi', icon: 'pi pi-fw pi-question-circle', routerLink: ['/app/admin/questions'] }
+                ]
+            });
+        }
     }
 }

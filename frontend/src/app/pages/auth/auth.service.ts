@@ -28,6 +28,7 @@ export class AuthService {
   login(credentials: { email: string, password: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
       tap((response: any) => {
+        console.log('Login Response:', response); // Debugging log
         // Gelen token'ı localStorage'a kaydet
         if (response && response.token) {
           // Önce tüm eski verileri temizle
@@ -37,6 +38,7 @@ export class AuthService {
           localStorage.setItem('email', credentials.email); // Email'i kaydet
           localStorage.setItem('points', response.points?.toString() || '0'); // Puanları kaydet
           localStorage.setItem('profile_picture', response.profile_picture || ''); // Profil resmini kaydet
+          localStorage.setItem('role', response.role || 'user'); // Rolü kaydet
           // Puan değişikliğini yayınla
           this.userPointsSubject.next(response.points || 0);
           this.userProfileImage.set(response.profile_picture || 'assets/images/avatar-placeholder.png');
@@ -76,6 +78,10 @@ export class AuthService {
     return !!token;
   }
 
+  isAdmin(): boolean {
+    return this.isAuthenticated() && localStorage.getItem('role') === 'admin';
+  }
+
   getUsername(): string | null {
     return localStorage.getItem('username');
   }
@@ -92,7 +98,7 @@ export class AuthService {
   getUserProfileImage(): string {
     return localStorage.getItem('profile_picture') || 'assets/images/avatar-placeholder.png';
   }
-   updateUserProfileImage(imagePath: string): void {
+  updateUserProfileImage(imagePath: string): void {
     localStorage.setItem('profile_picture', imagePath);
     // Optional: Notify other components of the change using a BehaviorSubject if needed.
     // For now, a page refresh will show the new avatar in the topbar.

@@ -1,0 +1,137 @@
+<div class="card">
+    <p-toast></p-toast>
+    <p-toolbar styleClass="mb-4 gap-2">
+        <ng-template pTemplate="left">
+            <button pButton pRipple label="Yeni Soru" icon="pi pi-plus" class="p-button-success mr-2"
+                (click)="openNew()"></button>
+        </ng-template>
+    </p-toolbar>
+
+    <p-table [value]="questions" [rows]="10" [paginator]="true"
+        [globalFilterFields]="['question_text', 'subject_name', 'topic_name']" [tableStyle]="{'min-width': '75rem'}"
+        [rowHover]="true" dataKey="question_id"
+        currentPageReportTemplate="{totalRecords} kayıttan {first} ile {last} arası gösteriliyor"
+        [showCurrentPageReport]="true">
+        <ng-template pTemplate="caption">
+            <div class="flex align-items-center justify-content-between">
+                <h5 class="m-0">Soru Yönetimi</h5>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th pSortableColumn="question_text">Soru <p-sortIcon field="question_text"></p-sortIcon></th>
+                <th pSortableColumn="subject_name">Ders <p-sortIcon field="subject_name"></p-sortIcon></th>
+                <th pSortableColumn="topic_name">Konu <p-sortIcon field="topic_name"></p-sortIcon></th>
+                <th pSortableColumn="difficulty">Zorluk <p-sortIcon field="difficulty"></p-sortIcon></th>
+                <th>İşlemler</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-question>
+            <tr>
+                <td>{{question.question_text}}</td>
+                <td>{{question.subject_name}}</td>
+                <td>{{question.topic_name}}</td>
+                <td>
+                    <span [class]="'badge status-' + question.difficulty">{{question.difficulty}}</span>
+                </td>
+                <td>
+                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
+                        (click)="editQuestion(question)"></button>
+                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning"
+                        (click)="deleteQuestion(question)"></button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog [(visible)]="questionDialog" [style]="{width: '800px'}" header="Soru Detayları" [modal]="true"
+    styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="formgrid grid">
+            <!-- Sınıflandırma Bölümü -->
+            <div class="col-12">
+                <h6 class="text-lg font-bold">Sınıflandırma</h6>
+            </div>
+            <div class="field col-12 md:col-6">
+                <label for="subject">Ders</label>
+                <p-select [options]="subjects" [(ngModel)]="question.subject_id" optionLabel="subject_name"
+                    optionValue="subject_id" (ngModelChange)="onSubjectChange()" placeholder="Ders Seçin"
+                    [style]="{'width':'100%'}" appendTo="body"></p-select>
+            </div>
+            <div class="field col-12 md:col-6">
+                <label for="topic">Konu</label>
+                <p-select [options]="filteredTopics" [(ngModel)]="question.topic_id" optionLabel="topic_name"
+                    optionValue="topic_id" placeholder="Konu Seçin" [disabled]="!question.subject_id"
+                    [style]="{'width':'100%'}" appendTo="body"></p-select>
+            </div>
+            <div class="field col-12 md:col-6">
+                <label for="difficulty">Zorluk</label>
+                <p-select [options]="difficulties" [(ngModel)]="question.difficulty" placeholder="Zorluk Seçin"
+                    [style]="{'width':'100%'}" appendTo="body"></p-select>
+            </div>
+
+            <div class="col-12">
+                <p-divider></p-divider>
+                <h6 class="text-lg font-bold">Soru İçeriği</h6>
+            </div>
+
+            <div class="field col-12">
+                <label for="question_text">Soru Metni</label>
+                <textarea id="question_text" pInputTextarea [(ngModel)]="question.question_text" required rows="3"
+                    class="w-full" placeholder="Sorunuzu buraya yazın..."></textarea>
+                <small class="p-error" *ngIf="submitted && !question.question_text">Soru metni gereklidir.</small>
+            </div>
+            <div class="field col-12">
+                <label for="image_path">Resim Yolu (Opsiyonel)</label>
+                <div class="p-inputgroup">
+                    <span class="p-inputgroup-addon"><i class="pi pi-image"></i></span>
+                    <input type="text" pInputText id="image_path" [(ngModel)]="question.image_path" class="w-full"
+                        placeholder="Örn: assets/images/soru1.jpg" />
+                </div>
+            </div>
+
+            <div class="col-12">
+                <p-divider></p-divider>
+                <h6 class="text-lg font-bold">Cevaplar</h6>
+            </div>
+
+            <div class="field col-12">
+                <label class="mb-3 font-bold">Seçenekler ve Doğru Cevap</label>
+                <div class="grid">
+                    <div *ngFor="let option of question.options; let i = index; trackBy: trackByIndex"
+                        class="col-12 md:col-6">
+                        <div class="flex align-items-center gap-2 mb-2">
+                            <p-radioButton name="correct_answer" [value]="i" [(ngModel)]="correctAnswerIndex"
+                                inputId="opt{{i}}"></p-radioButton>
+                            <div class="p-inputgroup">
+                                <span class="p-inputgroup-addon font-bold">{{i + 1}}</span>
+                                <input type="text" pInputText [(ngModel)]="question.options[i]"
+                                    placeholder="Seçenek {{i + 1}}" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <small class="block mt-2 text-500" *ngIf="submitted && correctAnswerIndex === null"
+                    style="color: red !important;">Lütfen doğru cevabı işaretleyin.</small>
+            </div>
+
+            <div class="field col-12">
+                <label for="hint">İpucu (Opsiyonel)</label>
+                <div class="p-inputgroup">
+                    <span class="p-inputgroup-addon"><i class="pi pi-info-circle"></i></span>
+                    <input type="text" pInputText id="hint" [(ngModel)]="question.hint" class="w-full"
+                        placeholder="Kullanıcıya yardımcı olacak bir ipucu" />
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="İptal" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton pRipple label="Kaydet" icon="pi pi-check" class="p-button-text"
+            (click)="saveQuestion()"></button>
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

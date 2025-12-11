@@ -1,15 +1,12 @@
 # --- STAGE 1: Build ---
-# Use a specific Node.js version based on your project's requirements.
-# Alpine is a good choice for smaller images.
 FROM node:20-alpine AS build
 
-# Set the working directory
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json (or yarn.lock, etc.)
-COPY package.json package-lock.json* ./
+# Copy package.json only to force fresh install (ignoring lockfile issues)
+COPY package.json ./
 
-# Install dependencies. This is done in a separate step to leverage Docker's layer caching.
+# Install dependencies
 RUN npm install
 
 # Copy the rest of the application's source code
@@ -19,10 +16,10 @@ COPY . .
 RUN npm run build
 
 # --- STAGE 2: Serve ---
-# Use a lightweight Nginx server to serve the static files
 FROM nginx:1.25-alpine
 
 # Copy the built application from the 'build' stage to Nginx's web root
+# Note: Adjust the source path if your angular.json output path is different
 COPY --from=build /usr/src/app/www/browser/. /usr/share/nginx/html
 
 # Copy the custom Nginx configuration

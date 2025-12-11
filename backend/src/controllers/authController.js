@@ -23,6 +23,7 @@ exports.register = async (req, res) => {
 
     res.status(201).json({ message: 'User registered successfully', userId: result.insertId });
   } catch (error) {
+    console.error("Register error:", error);
     // Kullanıcı adı veya email zaten varsa
     if (error.code === 'ER_DUP_ENTRY') {
       return res.status(409).json({ message: 'Username or email already exists' });
@@ -54,10 +55,15 @@ exports.login = async (req, res) => {
     }
 
     // JWT oluştur
-    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
 
-    res.status(200).json({ message: 'Login successful', token });
+    console.error(`DEBUG: User ${user.username} logged in.`);
+    console.error('DEBUG: Full User Object from DB:', JSON.stringify(user, null, 2));
+    console.error(`DEBUG: Role value: '${user.role}'`);
+
+    res.status(200).json({ message: 'Login successful', token, username: user.username, points: user.points, profile_picture: user.profile_picture, role: user.role });
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

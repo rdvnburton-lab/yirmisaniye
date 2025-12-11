@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/pages/auth/custom-login.component.css"],
-  "sourcesContent": ["/* Login sayfasının dikey ve yatayda ortalanmasını sağlar */\r\n.login-page-container {\r\n  height: 100vh;\r\n  width: 100vw;\r\n  overflow: hidden;\r\n  display: flex;\r\n  justify-content: center;\r\n  align-items: center;\r\n}\r\n\r\n/* Hata durumunda input kenarlıklarını kırmızı yapar */\r\n/* ::ng-deep, PrimeNG bileşenlerinin iç stillerine erişmemizi sağlar */\r\n::ng-deep .shake-effect .p-inputtext {\r\n  border-color: var(--red-500) !important;\r\n}\r\n\r\n/* Kafa sallama animasyonunu tetikleyen sınıf */\r\n.shake-effect {\r\n  animation: shake 0.6s cubic-bezier(.36, .07, .19, .97) both;\r\n}\r\n\r\n/* Kafa sallama animasyonunun keyframe'leri */\r\n@keyframes shake {\r\n  10%, 90% {\r\n    transform: translate3d(-1px, 0, 0);\r\n  }\r\n  20%, 80% {\r\n    transform: translate3d(2px, 0, 0);\r\n  }\r\n  30%, 50%, 70% {\r\n    transform: translate3d(-4px, 0, 0);\r\n  }\r\n  40%, 60% {\r\n    transform: translate3d(4px, 0, 0);\r\n  }\r\n}\r\n"],
-  "mappings": ";AACA,CAAA;AACE,UAAA;AACA,SAAA;AACA,YAAA;AACA,WAAA;AACA,mBAAA;AACA,eAAA;AACF;AAIA,UAAA,CAAA,aAAA,CAAA;AACE,gBAAA,IAAA;AACF;AAGA,CALA;AAME,aAAA,MAAA,KAAA,aAAA,GAAA,EAAA,GAAA,EAAA,GAAA,EAAA,KAAA;AACF;AAGA,WAJE;AAKA;AACE,eAAA,YAAA,IAAA,EAAA,CAAA,EAAA;AACF;AACA;AACE,eAAA,YAAA,GAAA,EAAA,CAAA,EAAA;AACF;AACA;AACE,eAAA,YAAA,IAAA,EAAA,CAAA,EAAA;AACF;AACA;AACE,eAAA,YAAA,GAAA,EAAA,CAAA,EAAA;AACF;AACF;",
-  "names": []
-}

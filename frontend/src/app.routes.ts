@@ -4,6 +4,7 @@ import { Notfound } from './app/pages/notfound/notfound';
 import { CustomLoginComponent } from './app/pages/auth/custom-login.component';
 import { RegisterComponent } from './app/pages/auth/register.component';
 import { authGuard } from './app/pages/auth/auth.guard';
+import { AdminGuard } from './app/pages/auth/admin.guard';
 import { ProfileComponent } from './app/pages/profile/profile.component';
 
 
@@ -22,21 +23,26 @@ export const appRoutes: Routes = [
         children: [
             { path: 'dashboard', loadComponent: () => import('./app/pages/dashboard/dashboard').then(m => m.Dashboard) },
             { path: 'profile', component: ProfileComponent },
-            { 
-                path: 'quiz', 
-                loadComponent: () => import('./app/pages/quiz/quiz.component').then(m => m.QuizComponent) 
-            }, 
-            { path: 'quiz-stats', loadComponent: () => import('./app/pages/quiz-stats/quiz-stats.component').then(m => m.QuizStatsComponent) }, 
-            { path: 'history', loadComponent: () => import('./app/pages/quiz-history/quiz-history.component').then(m => m.QuizHistoryComponent) }, 
+            {
+                path: 'quiz',
+                loadComponent: () => import('./app/pages/quiz/quiz.component').then(m => m.QuizComponent)
+            },
+            { path: 'quiz-stats', loadComponent: () => import('./app/pages/quiz-stats/quiz-stats.component').then(m => m.QuizStatsComponent) },
+            { path: 'history', loadComponent: () => import('./app/pages/quiz-history/quiz-history.component').then(m => m.QuizHistoryComponent) },
             { path: 'history/:quizId', loadComponent: () => import('./app/pages/quiz-detail/quiz-detail.component').then(m => m.QuizDetailComponent) },
-           { path: 'leaderboard', loadComponent: () => import('./app/pages/leaderboard/leaderboard.component').then(m => m.LeaderboardComponent) },
-           { path: 'friends', loadComponent: () => import('./app/pages/friends/friends.component').then(m => m.FriendsComponent) }, // Bu satır zaten doğru, sorun başka yerde olabilir.
-           { path: 'collections', loadComponent: () => import('./app/pages/collections/collections.component').then(m => m.CollectionsComponent) },
-           { path: 'store', loadComponent: () => import('./app/pages/store/store.component').then(m => m.StoreComponent) },
-           { path: 'user/:username', loadComponent: () => import('./app/pages/user-profile/user-profile.component').then(m => m.UserProfileComponent) },
+            { path: 'leaderboard', loadComponent: () => import('./app/pages/leaderboard/leaderboard.component').then(m => m.LeaderboardComponent) },
+            { path: 'friends', loadComponent: () => import('./app/pages/friends/friends.component').then(m => m.FriendsComponent) }, // Bu satır zaten doğru, sorun başka yerde olabilir.
+            { path: 'collections', loadComponent: () => import('./app/pages/collections/collections.component').then(m => m.CollectionsComponent) },
+            { path: 'store', loadComponent: () => import('./app/pages/store/store.component').then(m => m.StoreComponent) },
+            { path: 'user/:username', loadComponent: () => import('./app/pages/user-profile/user-profile.component').then(m => m.UserProfileComponent) },
+            {
+                path: 'admin/questions',
+                loadComponent: () => import('./app/pages/admin/question-management/question-management.component').then(m => m.QuestionManagementComponent),
+                canActivate: [AdminGuard]
+            },
             // /app yoluna gelindiğinde varsayılan olarak dashboard'a yönlendir.
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
-            
+
         ]
     },
 

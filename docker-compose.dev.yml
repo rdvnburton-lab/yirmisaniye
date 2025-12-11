@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  backend:
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+
+
+  db:
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    ports:
+      - "8080:80"

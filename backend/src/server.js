@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const { checkDbConnection, createUsersTable, createQuizTables, insertSampleData, getDbTables } = require('./config/db');
 const path = require('path');
+const fs = require('fs');
 
 // Ortam değişkenlerini yükle
 dotenv.config();
@@ -15,7 +16,31 @@ app.use(express.json()); // Gelen JSON verilerini işle
 
 // --- ANGULAR UYGULAMASINI SUNMAK İÇİN EKLENEN KOD ---
 // Derlenmiş Angular dosyalarının bulunduğu 'public' klasörünü statik olarak sun.
-app.use(express.static(path.join(__dirname, '..', 'public')));
+const publicPath = path.join(__dirname, '..', 'public');
+
+if (fs.existsSync(publicPath)) {
+    app.use(express.static(publicPath));
+
+    // --- ANGULAR ROUTING İÇİN FALLBACK ---
+    // API rotaları dışındaki tüm GET isteklerini Angular'ın index.html'ine yönlendir.
+    // Bu, Angular'ın client-side routing'inin çalışmasını sağlar.
+    app.get('*', (req, res, next) => {
+        if (req.path.startsWith('/api')) {
+            return next();
+        }
+        const indexPath = path.join(publicPath, 'index.html');
+        if (fs.existsSync(indexPath)) {
+            res.sendFile(indexPath);
+        } else {
+            res.status(404).send('Frontend not found (Dev mode: run ng serve)');
+        }
+    });
+} else {
+    console.log('Public directory not found, running in API-only mode.');
+    app.get('/', (req, res) => {
+        res.send('Backend API is running. Frontend not served (Dev mode).');
+    });
+}
 // ----------------------------------------------------
 
 // Rotaları tanımla
@@ -25,6 +50,7 @@ app.use('/api/friends', require('./routes/friends')); // Yeni arkadaşlık rotas
 app.use('/api/users', require('./routes/users')); // Yeni kullanıcı rotası
 app.use('/api/collections', require('./routes/collections')); // Yeni koleksiyon rotası
 app.use('/api/store', require('./routes/store')); // Yeni mağaza rotası
+app.use('/api/admin', require('./routes/admin')); // Yeni admin rotası
 
 // Ana Rota (Sağlık kontrolü için)
 app.get('/api/health', async (req, res) => {
@@ -37,14 +63,6 @@ app.get('/api/health', async (req, res) => {
     });
 });
 
-// --- ANGULAR ROUTING İÇİN FALLBACK ---
-// API rotaları dışındaki tüm GET isteklerini Angular'ın index.html'ine yönlendir.
-// Bu, Angular'ın client-side routing'inin çalışmasını sağlar.
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
-});
-// ------------------------------------
-
 const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
@@ -53,7 +71,7 @@ const startServer = async () => {
         await createUsersTable();
         await createQuizTables(); // Yeni tabloları oluştur
         await insertSampleData(); // Örnek verileri ekle
-    
+
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
         });
