@@ -80,24 +80,35 @@ const createQuizTables = async () => {
       CREATE TABLE IF NOT EXISTS soru_questions (
         question_id INT AUTO_INCREMENT PRIMARY KEY,
         topic_id INT NOT NULL,
+        difficulty ENUM('easy','medium','hard') NOT NULL,
+        question_text TEXT NOT NULL,
+        image_path VARCHAR(255) DEFAULT NULL,
+        options LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+        correct_answer VARCHAR(255) NOT NULL,
+        hint TEXT DEFAULT NULL,
+        FOREIGN KEY (topic_id) REFERENCES soru_topics(topic_id) ON DELETE CASCADE
+      )
+    `);
+    console.log("'soru_questions' table checked/created successfully.");
+
     // Quiz Oturumları Tablosu - SQL Hatası Düzeltildi
     await connection.query(`
-      CREATE TABLE IF NOT EXISTS soru_quizzes(
-      quiz_id INT AUTO_INCREMENT PRIMARY KEY,
-      user_id INT NOT NULL,
-      difficulty VARCHAR(10) NOT NULL,
-      question_types VARCHAR(255) NOT NULL,
-      is_timed BOOLEAN DEFAULT FALSE,
-      total_score INT DEFAULT 0,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
-    )
-      `);
+      CREATE TABLE IF NOT EXISTS soru_quizzes (
+        quiz_id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        difficulty VARCHAR(10) NOT NULL,
+        question_types VARCHAR(255) NOT NULL,
+        is_timed BOOLEAN DEFAULT FALSE,
+        total_score INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
     console.log("'soru_quizzes' table checked/created successfully.");
 
     // Cevap Logları Tablosu - Sizin yapınıza göre güncellendi
     await connection.query(`
-      CREATE TABLE IF NOT EXISTS soru_answer_logs(
+      CREATE TABLE IF NOT EXISTS soru_answer_logs (
         log_id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
         quiz_id INT DEFAULT NULL,
@@ -112,103 +123,103 @@ const createQuizTables = async () => {
         time_taken INT NOT NULL,
         thinking_time INT NOT NULL DEFAULT 0,
         logged_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
-      `);
+    `);
     console.log("'soru_answer_logs' table checked/created successfully.");
     await connection.query(`
-      CREATE TABLE IF NOT EXISTS friendships(
+      CREATE TABLE IF NOT EXISTS friendships (
         id INT AUTO_INCREMENT PRIMARY KEY,
         requester_id INT NOT NULL,
         addressee_id INT NOT NULL,
         status ENUM('pending', 'accepted', 'rejected', 'blocked') NOT NULL DEFAULT 'pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY(requester_id) REFERENCES users(id) ON DELETE CASCADE,
-        FOREIGN KEY(addressee_id) REFERENCES users(id) ON DELETE CASCADE,
-        UNIQUE KEY unique_friendship(requester_id, addressee_id)
+        FOREIGN KEY (requester_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (addressee_id) REFERENCES users(id) ON DELETE CASCADE,
+        UNIQUE KEY unique_friendship (requester_id, addressee_id)
       )
-      `);
+    `);
     console.log("'friendships' table checked/created successfully.");
 
     // Avatarlar Tablosu
     await connection.query(`
-      CREATE TABLE IF NOT EXISTS avatars(
+      CREATE TABLE IF NOT EXISTS avatars (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
         image_path VARCHAR(255) NOT NULL,
         unlock_condition VARCHAR(255) DEFAULT 'default', -- 'default', 'score:1000', 'achievement:first_quiz'
         cost INT DEFAULT 0
       )
-      `);
+    `);
     console.log("'avatars' table checked/created successfully.");
 
     // Rozetler Tablosu
     await connection.query(`
-      CREATE TABLE IF NOT EXISTS badges(
+      CREATE TABLE IF NOT EXISTS badges (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
         description TEXT,
         icon VARCHAR(255) NOT NULL,
-        unlock_condition VARCHAR(255) NOT NULL-- 'quizzes_completed:10', 'streak:5'
+        unlock_condition VARCHAR(255) NOT NULL -- 'quizzes_completed:10', 'streak:5'
       )
-      `);
+    `);
     console.log("'badges' table checked/created successfully.");
 
     // Kullanıcının Açtığı Öğeler Tablosu (Avatarlar ve Rozetler)
     await connection.query(`
-      CREATE TABLE IF NOT EXISTS user_unlocked_items(
+      CREATE TABLE IF NOT EXISTS user_unlocked_items (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
         item_type ENUM('avatar', 'badge') NOT NULL,
         item_id INT NOT NULL,
         unlocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
-      `);
+    `);
     console.log("'user_unlocked_items' table checked/created successfully.");
 
     // Alışveriş Sepeti Tablosu
     await connection.query(`
-      CREATE TABLE IF NOT EXISTS store_cart(
+      CREATE TABLE IF NOT EXISTS store_cart (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
         item_type ENUM('avatar') NOT NULL,
         item_id INT NOT NULL,
         added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
-        UNIQUE KEY unique_cart_item(user_id, item_type, item_id)
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        UNIQUE KEY unique_cart_item (user_id, item_type, item_id)
       )
-      `);
+    `);
     console.log("'store_cart' table checked/created successfully.");
 
     // Siparişler Tablosu
     await connection.query(`
-      CREATE TABLE IF NOT EXISTS store_orders(
+      CREATE TABLE IF NOT EXISTS store_orders (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
         total_cost INT NOT NULL,
         status ENUM('preparing', 'ready_for_delivery', 'delivered') NOT NULL DEFAULT 'preparing',
         order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         delivery_date TIMESTAMP NULL DEFAULT NULL,
-        FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
-      `);
+    `);
     console.log("'store_orders' table checked/created successfully.");
 
     // Kullanıcı Puan İşlemleri Tablosu
     await connection.query(`
-      CREATE TABLE IF NOT EXISTS user_point_transactions(
+      CREATE TABLE IF NOT EXISTS user_point_transactions (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
         transaction_type ENUM('earn_quiz', 'spend_store') NOT NULL,
         amount INT NOT NULL,
         description VARCHAR(255),
-        related_id INT, --quiz_id veya order_id olabilir
+        related_id INT, -- quiz_id veya order_id olabilir
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
-      `);
+    `);
     console.log("'user_point_transactions' table checked/created successfully.");
   } catch (error) { // Tüm tablo oluşturma hatalarını yakalayan tek catch bloğu
     console.error("Error creating quiz tables:", error);
@@ -226,9 +237,9 @@ const checkDbConnection = async (retries = 5, delay = 3000) => {
       console.log('Database connection successful.');
       return { connected: true, message: 'Database connection successful.' };
     } catch (error) {
-      console.error(`Database connection check failed(Attempt ${ i + 1}/${retries}): `, error.message);
+      console.error(`Database connection check failed (Attempt ${i + 1}/${retries}):`, error.message);
       if (i < retries - 1) {
-        console.log(`Retrying in ${ delay / 1000 } seconds...`);
+        console.log(`Retrying in ${delay / 1000} seconds...`);
         await new Promise(res => setTimeout(res, delay));
       } else {
         console.error("Could not connect to the database after several retries.");
@@ -245,7 +256,7 @@ const getDbTables = async () => {
     connection = await pool.getConnection();
     const [rows] = await connection.query('SHOW TABLES');
     // Sonucu ['users'] gibi basit bir diziye dönüştür
-    const tableKey = `Tables_in_${ process.env.DB_NAME } `;
+    const tableKey = `Tables_in_${process.env.DB_NAME}`;
     return rows.map(row => row[tableKey]);
   } catch (error) {
     console.error("Error fetching tables:", error.message);
@@ -270,26 +281,26 @@ const insertSampleData = async () => {
 
     // Örnek Kullanıcıları Ekle
     await connection.query(`
-      INSERT INTO users(id, username, email, password, role, created_at, points, total_score) VALUES
-    (1, 'rdvnburton', 'ridvanhsyn@gmail.com', '$2a$10$8q5yc4jUnCeJmP7XgftxeewO7NgJYCOKwLl2Rv.MvVyetz5W9Apq.', 'admin', '2025-11-11 11:53:00', 100, 100),
-    (2, 'Rzgr', 'Ruzgarsahin2017@gmail.com', '$2a$10$4/ULkKlR0Q8PMVV/Za0/husSOMmCiDkcc3IeBcAbPqIbDV11vTy1m', 'user', '2025-11-11 12:29:33', 100, 100);
-  `);
+      INSERT INTO users (id, username, email, password, role, created_at, points, total_score) VALUES
+      (1, 'rdvnburton', 'ridvanhsyn@gmail.com', '$2a$10$8q5yc4jUnCeJmP7XgftxeewO7NgJYCOKwLl2Rv.MvVyetz5W9Apq.', 'admin', '2025-11-11 11:53:00', 100, 100),
+      (2, 'Rzgr', 'Ruzgarsahin2017@gmail.com', '$2a$10$4/ULkKlR0Q8PMVV/Za0/husSOMmCiDkcc3IeBcAbPqIbDV11vTy1m', 'user', '2025-11-11 12:29:33', 100, 100);
+    `);
 
     // 1. Örnek Dersleri Ekle
     // Not: Yeni konular subject_id 3 ve 4'ü kullandığı için Hayat Bilgisi ve Fen Bilimleri eklendi.
     await connection.query(`
-      INSERT INTO soru_subjects(subject_id, subject_name, subject_slug, icon) VALUES
-    (1, 'Matematik', 'math', NULL),
-    (2, 'Türkçe', 'turkish', NULL),
-    (3, 'Hayat Bilgisi', 'life_science', NULL),
-    (4, 'Fen Bilimleri', 'science', NULL)
-      `);
+      INSERT INTO soru_subjects (subject_id, subject_name, subject_slug, icon) VALUES
+      (1, 'Matematik', 'math', NULL),
+      (2, 'Türkçe', 'turkish', NULL),
+      (3, 'Hayat Bilgisi', 'life_science', NULL),
+      (4, 'Fen Bilimleri', 'science', NULL)
+    `);
 
     // 2. Örnek Konuları Ekle
     // Not: topic_id'ler AUTO_INCREMENT olduğu için ID'leri manuel vermiyoruz.
     // Bunun yerine, soruları eklerken konuları isimleriyle bulacağız.
     await connection.query(
-      `INSERT INTO soru_topics(topic_name, subject_id, topic_slug, icon) VALUES ? `,
+      `INSERT INTO soru_topics (topic_name, subject_id, topic_slug, icon) VALUES ?`,
       [[
         ['Toplama', 1, 'addition', 'pi pi-plus'],
         ['Çıkarma', 1, 'subtraction', 'pi pi-minus'],
@@ -313,7 +324,7 @@ const insertSampleData = async () => {
     // 3. Örnek Soruları Ekle
     // Seçenekleri JSON formatında string'e çeviriyoruz
     await connection.query(
-      `INSERT INTO soru_questions(question_id, topic_id, difficulty, question_text, image_path, options, correct_answer, hint) VALUES ? `,
+      `INSERT INTO soru_questions (question_id, topic_id, difficulty, question_text, image_path, options, correct_answer, hint) VALUES ?`,
       [[
         // Not: topic_id'ler dinamik olarak atanır. Buradaki örnekler ilk konuya (Toplama) atanacaktır.
         // Daha çeşitli konulara atamak için topic_id'leri manuel olarak değiştirmeniz gerekebilir.
@@ -334,29 +345,29 @@ const insertSampleData = async () => {
     // 4. Örnek Avatarları ve Rozetleri Ekle
     // Artık silmeye gerek yok, çünkü sadece tablo boşsa ekleme yapıyoruz.
     await connection.query(`
-      INSERT INTO avatars(id, name, image_path, unlock_condition, cost) VALUES
-    (1, 'Maceracı Tigin', 'assets/images/avatars/tigin-default.png', 'default', 0),
-    (2, 'Bilge Baykuş', 'assets/images/avatars/owl-wise.png', 'score:1000', 1000),
-    (3, 'Süper Roket', 'assets/images/avatars/rocket-super.png', 'quizzes_completed:25', 2500),
-    (4, 'Robot Dost', 'assets/images/avatars/robot-friend.png', 'purchase', 1500),
-    (5, 'Ninja Kedi', 'assets/images/avatars/cat-ninja.png', 'purchase', 3000),
-    (6, 'Kaptan Penguen', 'assets/images/avatars/penguin-captain.png', 'purchase', 2000);
-  `);
+      INSERT INTO avatars (id, name, image_path, unlock_condition, cost) VALUES
+      (1, 'Maceracı Tigin', 'assets/images/avatars/tigin-default.png', 'default', 0),
+      (2, 'Bilge Baykuş', 'assets/images/avatars/owl-wise.png', 'score:1000', 1000),
+      (3, 'Süper Roket', 'assets/images/avatars/rocket-super.png', 'quizzes_completed:25', 2500),
+      (4, 'Robot Dost', 'assets/images/avatars/robot-friend.png', 'purchase', 1500),
+      (5, 'Ninja Kedi', 'assets/images/avatars/cat-ninja.png', 'purchase', 3000),
+      (6, 'Kaptan Penguen', 'assets/images/avatars/penguin-captain.png', 'purchase', 2000);
+    `);
 
     await connection.query(`
-      INSERT INTO badges(id, name, description, icon, unlock_condition) VALUES
-    (1, 'İlk Adım', 'İlk quizini başarıyla tamamladın!', 'pi pi-flag-fill', 'quizzes_completed:1'),
-    (2, 'Puan Canavarı', 'Toplamda 1000 puana ulaştın!', 'pi pi-star-fill', 'score:1000'),
-    (3, 'Matematik Ustası', 'Matematik dersinden 10 quizi tamamladın.', 'pi pi-calculator', 'subject_quizzes_completed:1:10');
-  `);
+      INSERT INTO badges (id, name, description, icon, unlock_condition) VALUES
+      (1, 'İlk Adım', 'İlk quizini başarıyla tamamladın!', 'pi pi-flag-fill', 'quizzes_completed:1'),
+      (2, 'Puan Canavarı', 'Toplamda 1000 puana ulaştın!', 'pi pi-star-fill', 'score:1000'),
+      (3, 'Matematik Ustası', 'Matematik dersinden 10 quizi tamamladın.', 'pi pi-calculator', 'subject_quizzes_completed:1:10');
+    `);
 
     // Örnek kullanıcıya varsayılan avatarı ata
     // Bu sorguyu da IGNORE ile bırakıyoruz ki tekrar tekrar aynı kaydı eklemesin.
     await connection.query(`
-      INSERT IGNORE INTO user_unlocked_items(user_id, item_type, item_id) VALUES
-    (1, 'avatar', 1),
-    (2, 'avatar', 1);
-  `);
+      INSERT IGNORE INTO user_unlocked_items (user_id, item_type, item_id) VALUES
+      (1, 'avatar', 1),
+      (2, 'avatar', 1);
+    `);
 
     await connection.commit();
     console.log('Sample data inserted successfully.');
